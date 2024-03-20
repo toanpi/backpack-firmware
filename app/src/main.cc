@@ -13,5 +13,12 @@ int main() {
   pw::InlineString<6> name = "World";
   app::WelcomeMessage(buffer, greeting, name);
   PW_LOG_INFO("%s", buffer.c_str());
+  
+  uint32_t count = 0;
+
+  while (true) {
+    k_sleep(K_MSEC(1000));
+    PW_LOG_INFO("Hello toanpi %d", count++);
+  }
   return 0;
 }

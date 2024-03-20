@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Build",
+			"command": "west build -b decawave_dwm1001_dev app/",
+			// set default build task to this task
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+			
+		}
+	]
+}
+
