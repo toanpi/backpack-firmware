@@ -1,0 +1,51 @@
+syntax = "proto3";
+import "nanopb.proto";
+package collectorPkg;
+
+//******************************************************************************
+//  SUB-1GHZ COLLECTOR MESSENGER
+//******************************************************************************
+message devInfo {
+  repeated uint32 address = 1 [(nanopb).max_count = 100];
+  uint32 addrBlockSize = 2;
+}
+
+message startLossTestMsg {
+  uint32 packetSize = 1;
+  uint32 packetNum = 2;
+  uint32 period = 3;
+}
+
+message lossTestResultMsg {
+  uint32 nodeAddr = 1;
+  uint32 numPacketSent = 2;
+  uint32 numPacketReceived = 3;
+  bool success = 4;
+}
+
+message lossTestProgressMsg {
+  uint32 packetNum = 1;
+  bool success = 2;
+}
+
+message blinkMsg {
+  uint32 address = 1;
+}
+
+message identifyMsg {
+  uint32 address = 1;
+}
+
+message collectorMsg {
+  oneof type {
+    devInfo devList = 1;
+    startLossTestMsg startLossTest = 2;
+    lossTestResultMsg lossTestResult = 3;
+    lossTestProgressMsg lossTestProgress = 4;
+    
+    identifyMsg identify = 6;
+    bool blink = 7;
+    bool reqList = 8;
+    bool reqStopLossTest = 9;
+  }
+}

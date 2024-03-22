@@ -1,0 +1,30 @@
+syntax = "proto3";
+package algoPkg;
+
+//******************************************************************************
+//  MESSENGER
+//******************************************************************************
+message humanDetectionMsg {
+  uint32 hdResult = 1;
+  uint32 hdProcessTimeUs = 2;
+  uint32 captureIntervalMs = 3;
+  uint32 camOnTimeMs = 4;
+  uint32 camCircleTimeMs = 5;
+}
+
+message blobDetectionMsg {
+  uint32 resultX = 1;
+  uint32 resultY = 2;
+}
+
+message hdConfigMsg {
+  bool enable = 1;
+}
+
+message algoMsg {
+  oneof type {
+    humanDetectionMsg humanDetection = 1;
+    blobDetectionMsg blobDetection = 2;
+    hdConfigMsg hdConfig = 3;
+  }
+}

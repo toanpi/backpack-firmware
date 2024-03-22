@@ -1,0 +1,4 @@
+west build -b decawave_dwm1001_dev -p -- -DCONF_FILE=prj_anchor.conf
+
+west build -b decawave_dwm1001_dev -- -DCONF_FILE=prj_anchor.conf
+

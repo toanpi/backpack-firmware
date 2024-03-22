@@ -1,0 +1,104 @@
+syntax = "proto3";
+package cmdPkg;
+
+//******************************************************************************
+//  MESSENGER
+//******************************************************************************
+message writeRegMsg {
+  uint32 reg = 1;
+  uint32 value = 2;
+}
+
+message rgbVideoModeMsg {
+  uint32 mode = 1;
+  uint32 frameCnt = 2;
+}
+
+message autoGainRGBCamMsg {
+  uint32 enable = 1;
+  uint32 gainDb = 2;
+  uint32 gainDbCeiling = 3;
+}
+
+message expouseRGBCamMsg {
+  uint32 enable = 1;
+  uint32 exposureUs = 2;
+}
+
+message RGBCamMsg {
+  oneof type {
+    uint32 startRGBCam = 1;
+    bool stopRGBCam = 2;
+    bool captureRGBCam = 3;
+    uint32 updateIntervalRGBCam = 4;
+    bool shutdownRGBCam = 5;
+    bool bootupRGBCam = 6;
+    bool powerOffRGBCam = 7;
+    bool powerOnRGBCam = 8;
+    bool alwaysOnModeRGBCam = 9;
+    bool optimizeModeRGBCam = 10;
+    bool runFCCRGBCam = 11;
+    bool getInfoRGBCam = 12;
+    writeRegMsg writeRegRGBCam = 13;
+    uint32 readRegRGBCam = 14;
+    rgbVideoModeMsg videoModeRGBCam = 15;
+    uint32 bightnessRGBCam = 16;
+    expouseRGBCamMsg expouseRGBCam = 17;
+    autoGainRGBCamMsg autoGainRGBCam = 18;
+    uint32 gainCeilingRGBCam = 19;
+    uint32 frameRateRGBCam = 20;
+    uint32 pixelFormatRGBCam = 21;
+    uint32 frameSizeRGBCam = 22;
+  }
+}
+message IRCamMsg {
+  oneof type {
+    uint32 startIrCam = 1;
+    bool stopIrCam = 2;
+    bool captureIrCam = 3;
+    uint32 updateIntervalIrCam = 4;
+    bool shutdownIrCam = 5;
+    bool bootupIrCam = 6;
+    bool powerOffIrCam = 7;
+    bool powerOnIrCam = 8;
+    bool alwaysOnModeIrCam = 9;
+    bool optimizeModeIrCam = 10;
+    bool runFCCIrCam = 11;
+    bool getInfoIrCam = 12;
+    bool humanDetectionEnIrCam = 13;
+  }
+}
+
+message transferControlImuMsg {
+  // bool includeImu = 1;
+  bool dimension = 2;
+  bool quaternion = 3;
+  bool imuOmega = 4;
+  bool imuAbsoluteLinearSpeed = 5;
+  bool accel = 6;
+  bool imuPosition = 7;
+  bool angularVelocity  = 8;
+}
+
+message transferControlUwbMsg {
+  // bool includeUwb = 1;
+  bool location = 2;
+  bool ranging = 3;
+}
+
+message transferControlMsg {
+  transferControlImuMsg imu = 2;
+  transferControlUwbMsg uwb = 4;
+}
+
+message cmdMsg {
+  oneof type {
+    // IR camera message
+    IRCamMsg irMsg = 1;
+    // RGB camera message
+    RGBCamMsg rgbMsg = 2;
+    // Transfer control message
+    transferControlMsg transferControlCfg = 3;
+    bool transferControlGet = 4;
+  }
+}

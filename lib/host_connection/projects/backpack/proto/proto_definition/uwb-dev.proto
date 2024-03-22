@@ -1,0 +1,164 @@
+syntax = "proto3";
+import "nanopb.proto";
+import "uwb-dev-config.proto";
+
+package uwbDevPkg;
+
+enum uwbError {
+  UWB_OK              = 0;
+  UWB_SET_CONFIG_ERR  = 1;
+}
+
+message uwbLog {
+  string msg = 1;
+}
+
+enum stateCode {
+  SEARCHING     = 0;
+  CONNECTED     = 1;
+}
+
+enum neighborStateCode {
+  IN_RANGE =				0; //uwb in list that is active, in range, and are slotted to range with
+  OUT_OF_RANGE =	  1; //uwb in list that is active, out of range, and a neighbor is slotted to range with
+  INACTIVE =        2; //uwb in list that is not active (could have previously been neighbor, hidden, or twice hidden)
+}
+
+enum actionReq {
+  ACTION_UNKNOW    = 0;
+  GET_DEV_CFG      = 1;
+  GET_DEV_NET_INFO = 2;
+  GET_DEV_INFO     = 3;
+  SET_DEV_CFG      = 4;
+}
+
+enum rangingError {
+  APP_UWB_SUCCESS                     = 0;
+  // Ranging error
+  APP_UWB_WAIT_CONFIRM_TIMEOUT        = 1;
+  APP_UWB_RX_TIMEOUT                  = 2;
+  APP_UWB_POLL_TIMEOUT                = 3;
+  APP_UWB_FINAL_TIMEOUT               = 4;
+
+  APP_UWB_UNKNOWN                     = 5;
+}
+
+message devReq {
+  actionReq action = 1;
+  uint32 address = 2;
+}
+
+message neighborInfo {
+  uint32 address = 1;
+  uwbPos position= 2;
+}
+
+message neighborInfoList {
+  uint32 address = 1;
+  repeated uint32 neighbors = 2 [(nanopb).max_count = 100];
+}
+
+message hostSetup {
+  uint32 address = 1;
+  repeated uint32 neighbors = 2 [(nanopb).max_count = 100];
+}
+
+message neighborRangingInfo {
+  uint32 address = 1;
+  float distance_rsl = 2;
+  rangingError error = 3;
+  neighborStateCode state = 4;
+}
+
+message testMsg {
+  uint32 code = 1;
+  repeated uint32 ping = 2 [(nanopb).max_count = 25];
+}
+
+message testMsgResponse {
+  uint32 code = 1;
+  bool success = 2;
+}
+
+//******************************************************************************
+//   COMMON DEVICE INFO
+//******************************************************************************
+message uwbDevInfo {
+  OpModeCode opMode = 1;
+  uint32 address = 2;
+  uwbPos position = 3;
+  stateCode state = 4;
+  uint32 neighborsCount = 5;
+  uint32 hiddensCount = 6;
+  uint32 swMajorVersion = 7;
+  uint32 swMinorVersion = 8;
+  uint32 slotDurationMs = 9;
+  uint32 panId = 10;
+  bool isInTestMode = 11;
+}
+
+//******************************************************************************
+//  ANCHOR NETWORK INFO
+//******************************************************************************
+message uwbAncNetInfo {
+  uint32 address = 1;
+  uwbPos position = 2;
+  OpModeCode opMode = 3;
+  stateCode state = 4;
+  repeated uint32 neighbors = 5 [(nanopb).max_count = 100];
+  repeated uint32 hiddens = 6 [(nanopb).max_count = 100];
+}
+
+//******************************************************************************
+//  DEV NETWORK INFO
+//******************************************************************************
+message uwbDevNetInfo {
+  uint32 address = 1;
+  uwbPos position = 2;
+  stateCode state = 3;
+  OpModeCode opMode = 4;
+  repeated neighborInfo neighbors = 5 [(nanopb).max_count = 3];
+  uint32 timestamp = 6;
+}
+
+message uwbRangingInfo {
+  uint32 address = 1;
+  bool isInTestMode = 2;
+  stateCode state = 3;
+  repeated neighborRangingInfo neighbors = 4 [(nanopb).max_count = 4];
+}
+
+//******************************************************************************
+//  UWB DEVICE MESSENGER
+//******************************************************************************
+message uwbDevMsg {
+  oneof type {
+    uwbLog log = 1;
+    uwbDevConfig devConfig = 2;
+    uwbDevInfo devInfo = 3;
+    uwbDevNetInfo devNetInfo = 4;
+    uwbAncNetInfo ancNetInfo = 5;
+    uwbError uwbError = 6;
+    uwbRangingInfo rangingInfo = 7;
+
+    // Request
+    bool getDevCfg = 21;
+    bool getDevNetInfo = 22;
+    bool getDevInfo = 23;
+    uwbDevConfig setDevCfg = 24;
+    uwbSmoothAlgoCfg smoothAlgoCfg = 25;
+    uwbCalibCfg setCalibCfg = 26;
+    bool getCalibInfo = 27;
+    uwbNetworkCreateConfig netCfg = 28;
+    uwbTestModeCfg testModeCfg = 29;
+
+    // Transfer
+    bool listNeighbors = 41;
+    neighborInfoList neighborsList = 42;
+    testMsg testMsg = 43;
+    bool hostSetupReq = 44;
+    hostSetup hostMsg = 45;
+    testMsgResponse testMsgResponse = 46;
+
+  }
+}

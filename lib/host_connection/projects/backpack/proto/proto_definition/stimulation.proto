@@ -1,0 +1,109 @@
+syntax = "proto3";
+import "nanopb.proto";
+package stimulationPkg;
+
+//******************************************************************************
+//  STIMULATION CONFIG MESSENGER
+//******************************************************************************
+message channelConfigMsg {
+  bool enable = 1;
+  uint32 duration = 2;
+  uint32 ton1 = 3;
+  uint32 toff1 = 4;
+  uint32 ton2 = 5;
+  uint32 toff2 = 6;
+  uint32 cycle = 7;
+  uint32 rest = 8;
+  float amp = 9;
+  uint32 chId = 10;
+}
+
+message burstMsg {
+  bool enable = 1;
+}
+
+message channelsConfigMsg {
+  bool stiStartStop = 1;
+  float gain = 2;
+  burstMsg burst = 4;
+  repeated channelConfigMsg config = 5 [(nanopb).max_count = 4];
+}
+
+message directionControlMsg {
+  burstMsg burst = 1;
+  float gain = 2;
+  channelConfigMsg config = 3;
+  uint32 topChannel = 4;
+  uint32 bottomChannel = 5;
+  bool start = 6;
+}
+
+enum stiAlgoType {
+  FIXED_VOLTAGE = 0;
+  RANDOMLY_ADJUST = 1;
+  SPEED_BASED_REGULATOR = 2;
+}
+
+message autoStimulationMsg {
+  uint32 interval = 1;
+  uint32 minInterval = 2;
+  uint32 maxInterval = 3;
+  uint32 restInterval = 4;
+  uint32 restDuration = 5;
+  float leftMinAmp = 6;
+  float leftMaxAmp = 7;
+  float rightMinAmp = 8;
+  float rightMaxAmp = 9;
+  float forwardMinAmp = 10;
+  float forwardMaxAmp = 11;
+  bool intervalIsRandomized = 12;
+  float linearSpeedThreshold = 13;
+  float omegaThreshold01 = 14;
+  float omegaThreshold02 = 15;
+  float amplitudeStepUpRatio = 16;
+  float amplitudeStepDownRatio = 17;
+  float amplitudeReactivation = 18;
+  stiAlgoType algoType = 19;
+  float forwardProbability = 20;
+}
+
+
+message resetCfg {
+  uint32 imuGain = 1;
+}
+
+message stiInfo {
+  float batteryVoltage = 1;
+  float leftTurnVoltage = 2;
+  float rightTurnVoltage = 3;
+  float forwardVoltage = 4;
+  uint32 stiType = 5;
+}
+
+message volRangeForward {
+  uint32 durationSecond = 1;
+  float minVol = 2;
+  float maxVol = 3;
+}
+
+message volRangeForwardMsg {
+  repeated volRangeForward range = 1 [(nanopb).max_count = 5];
+  uint32 startIdx = 2;
+  bool needReset = 3;
+}
+
+message stimulationMsg {
+  oneof type {
+    channelsConfigMsg channelsConfig = 1;
+    autoStimulationMsg autoStiCfg = 2;
+
+    bool resetState = 3;
+    bool autoSti = 4;
+    directionControlMsg turnRight = 5;
+    directionControlMsg turnLeft = 6;
+    directionControlMsg moveForward = 7;
+    bool stopSti = 8;
+    stiInfo stiInfo = 9;
+    volRangeForwardMsg volRangeForwardMsg = 10;
+  }
+}

@@ -1,0 +1,28 @@
+syntax = "proto3";
+import "nanopb.proto";
+package backpackConfigPkg;
+
+//******************************************************************************
+//  BACKPACK CONFIG MESSENGER
+//******************************************************************************
+message channelConfigMsg {
+  bool enable = 1;
+  uint32 duration = 2;
+  uint32 ton1 = 3;
+  uint32 toff1 = 4;
+  uint32 ton2 = 5;
+  uint32 toff2 = 6;
+  uint32 cycle = 7;
+  uint32 rest = 8;
+  uint32 amp = 9;
+}
+
+message channelsConfigMsg {
+  bool StiStartstop = 1;
+  uint32 gain = 2;
+  uint32 command = 3;
+  repeated channelConfigMsg config = 4 [(nanopb).max_count = 4];
+}
+
+
+

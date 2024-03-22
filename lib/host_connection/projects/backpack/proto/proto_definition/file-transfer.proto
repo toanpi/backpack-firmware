@@ -1,0 +1,64 @@
+syntax = "proto3";
+import "nanopb.proto";
+package fileTransferPkg;
+
+
+enum fileType {
+  HW_LOG = 0;
+  IR_IMAGE = 1;
+  RGB_IMAGE = 2;
+}
+
+enum fileError {
+  OK = 0;
+  OPEN_FILE_ERROR = 1;
+  WRITE_FILE_ERROR = 2;
+  CLOSE_FILE_ERROR = 3;
+  FILE_NOT_FOUND = 4;
+  READ_FILE_ERROR = 5;
+}
+
+//******************************************************************************
+//  FILE TRANSFER MESSENGER
+//******************************************************************************
+message fileDataMsg {
+  fileType fileType = 1;
+  uint32 sessionId = 2;
+  uint32 seq = 3;
+  bool isLast = 4;
+  uint32 length = 5;
+  bytes data = 6;
+  fileError error = 7;
+  uint32 width = 8;
+  uint32 height = 9;
+}
+
+message getFileMsg {
+  fileType fileType = 1;
+  uint32 sessionId = 2;
+  bool deleteWhenDone = 3;
+}
+
+message fileInfo {
+  fileType fileType = 1;
+  uint32 fileSize = 2;
+}
+
+message listFilesMsg {
+  repeated fileInfo files = 1 [(nanopb).max_count = 2];
+}
+
+message delFilesMsg {
+  repeated fileType files = 1 [(nanopb).max_count = 2];
+}
+
+message fileMsg {
+  oneof type  {
+    fileDataMsg fileData = 1;
+    getFileMsg getFile = 2;
+    listFilesMsg filesInfo = 3;
+    bool stopTransfer = 4;
+    delFilesMsg deleteFile = 5;
+    bool listFiles = 6;
+  }
+}

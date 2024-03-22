@@ -1,0 +1,76 @@
+syntax = "proto3";
+package HwLogPkg;
+
+message SystemFault {
+  enum Type {
+    _NOT_SET    = 0;
+    HARD_FAULT  = 1;
+    BUS_FAULT   = 2;
+    USAGE_FAULT = 3;
+    MEM_FAULT   = 4;
+  }
+
+  Type   type       = 1;
+  uint32 pcAddr    = 2;
+  uint32 lrAddr    = 3;
+  uint32 psrAddr   = 4;
+}
+
+message Watchdog {
+  string  threadName         = 1;
+  uint32  regLr              = 2;
+  uint32  regPc              = 3;
+  uint32  threadRegLr       = 4;
+  uint32  threadRegPc       = 5;
+  uint32  executionTick      = 6;
+}
+
+/*
+ * Hardware log entry
+ */
+message Entry {
+
+  uint32            systemTickMs        = 1;        /* System tick in miliseconds */
+  bool              systemTickReset     = 2;        /* True if the System tick has been reset to zero */
+  Timestamp         timestamp             = 3;        /* Unix timestamp */
+  Level             level                 = 4;        /* Hardware log level */
+
+  oneof type {
+    Watchdog              watchdog              = 10;       /* Watchdog log */
+    SystemFault           systemFault          = 11;       /* System fault log */
+    
+    /*
+     * List of entries used for debugging only
+     */
+    Debug debug = 999;
+  }
+
+  /*
+  * Hardware log level
+  */
+  enum Level {
+    _NOT_SET   = 0;     /* Designates as INFO level */
+    TRACE      = 1;     /* Designates finer-grained informational events than the DEBUG */
+    DEBUG      = 2;     /* Designates fine-grained informational events that are most useful to debug an application. */
+    INFO       = 3;     /* Designates informational messages that highlight the progress of the application. */
+    WARN       = 4;     /* Designates potentially harmful situations. */
+    ERROR      = 5;     /* Designates error events that might still allow the application to continue running. */
+    FATAL      = 6;     /* Designates very severe error events that will presumably lead the application to abort. */
+  }
+}
+
+/*
+ * Hardware log timestamp
+ */
+message Timestamp {
+  uint64 milliseconds   = 1;     /* Number of milliseconds elapsed since the Unix epoch */
+  int32  tzOffset      = 2;     /* Timezone offset in minutes */
+}
+
+/*
+ * Message type used for debugging and testing
+ */
+message Debug {
+  uint32 val = 1;
+  string msg = 2;
+}

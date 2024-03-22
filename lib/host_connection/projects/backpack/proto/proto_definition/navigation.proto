@@ -1,0 +1,119 @@
+syntax = "proto3";
+import "nanopb.proto";
+package navigationPkg;
+
+//******************************************************************************
+//  CONFIG MESSENGER
+//******************************************************************************
+
+enum linearSpeedType {
+  LINEAR_VICON = 0;
+  LINEAR_IMU = 1;
+}
+
+enum angleSpeedType {
+  ANGLE_VICON = 0;
+  ANGLE_IMU = 1;
+}
+
+message paramMsg {
+  float angle = 1;
+  float distance = 2;
+  uint32 forwardTime = 3;
+  // Free Walk Time
+  uint32 freeTime = 4;
+  uint32 longStimulus = 5;
+  uint32 longStimulusForwardTime = 6;
+  uint32 longStimulusFreeTime = 7;
+  uint32 controlRate = 8;
+  // Setup duration to check speed
+  uint32 speedDuration = 9;
+  // Setup threshold of linear speed
+  float linearSpeedThreshold = 10;
+  // Setup time to for calculate speed (window time for using moving average)
+  float speedStore = 11;
+  // Setup the allowance of freewalk after steering
+  bool allowFreeWalkAfterSteering = 12;
+  // Setup the time for freewalk after steering
+  uint32 freeTimeAfterSteering = 13;
+  // Setup final part of long stimulus
+  uint32 longStimulusFreeTime2 = 14;
+  // Setup threshold of angular speed
+  float angularSpeedThreshold = 15;
+  // Setup escape mode
+  bool useEscapeMode = 16;
+  // Setup time alow the cockroach to response to the stimulation before speed calculation
+  uint32 reactionTime = 17;
+  // Setup method to calculate angular speed
+  uint32 angularSpeedMethod = 18;
+  // Would we use IMU to calculate linear speed
+  linearSpeedType linearSpeed = 19;
+  // Would we use IMU to calculate angular speed
+  angleSpeedType angularSpeed = 20;
+}
+
+// There were 8 targets sent to the wireless board
+// In this version, the number of targets is reduced to 1
+message cordinate {
+  float x = 1;
+  float y = 2;
+}
+
+message target {
+  repeated cordinate target = 1 [(nanopb).max_count = 8];
+}
+
+message seeking {
+  float step1 = 1;
+  float step2 = 2;
+  float minTemp = 3;
+  float maxTemp = 4;
+  float numberPixelToStart = 8;
+  float maxMedian = 10;
+  float humanNumberOfPixelToStart = 11;
+  float xmin = 12;
+  float xmax = 13;
+  float ymin = 14;
+  float ymax = 15;
+  float levyMin = 16;
+  float levyMax = 17;
+  float humanAdditionalStep = 18;
+}
+
+message position {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message autoNav {
+  bool isTheRoachConfined = 1;
+  position robotHeadPos = 2;
+  position robotTailPos = 3;
+  uint32 frameNumber = 4;
+}
+
+message levyStatus {
+  uint32 levyWalkTurn = 1;
+  uint32 frameNumber = 2;
+  float levyWalkForwardVelocityVicon = 3;
+  float levyWalkAngularVelocityVicon = 4;
+  repeated position levyWalkTarget = 5 [(nanopb).max_count = 2];
+  position levyWalkTargetCurrent = 6;
+  float seekingAlpha = 7;
+  float seekingGama = 8;
+  float seekingBeta = 9;
+  uint32 seekingNumberPixelInRange = 10;
+}
+
+message navigationMsg {
+  oneof type {
+    paramMsg paramCfg = 1;
+    target targetSet = 2;
+    bool stopNav = 3;
+    seeking seekingCfg = 4;
+    levyStatus levyStatus = 5;
+    autoNav autoNavCfg = 6;
+    bool loadState = 7;
+  }
+}

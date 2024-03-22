@@ -9,8 +9,8 @@
 
 # Checked out by West
 bootloader/
-modules/
-third_party/
+# modules/
+# third_party/
 tools/
 
 # Build artifacts

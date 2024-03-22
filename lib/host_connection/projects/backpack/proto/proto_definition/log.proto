@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+// import "log_err.proto";
+
+package LogPkg;
+
+message LogManager {
+  string msg = 1;
+}

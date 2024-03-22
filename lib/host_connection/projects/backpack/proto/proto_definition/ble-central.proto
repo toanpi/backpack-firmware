@@ -1,0 +1,27 @@
+syntax = "proto3";
+import "nanopb.proto";
+package bleCentralPkg;
+
+//******************************************************************************
+//  BLE CENTRAL MESSENGER
+//******************************************************************************
+message bleDevInfo {
+  uint64 address = 1;
+  uint32 addrType = 2;
+}
+
+message bleDevsInfo {
+  repeated bleDevInfo list = 1 [(nanopb).max_count = 20];
+}
+
+message bleCentralMsg {
+  oneof type {
+    string state = 1;
+    bleDevsInfo scanDev = 2;
+    bleDevsInfo connectDev = 3;
+
+    bleDevsInfo reqConnectDev = 10;
+    bleDevsInfo reqDisconnectDev = 11;
+    bool listConnectedDev = 12;
+  }
+}

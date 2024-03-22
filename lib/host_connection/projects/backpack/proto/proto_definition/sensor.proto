@@ -1,0 +1,103 @@
+syntax = "proto3";
+import "nanopb.proto";
+import "stimulation.proto";
+import "navigation.proto";
+package sensorPkg;
+
+//******************************************************************************
+//  BACKPACK CONFIG MESSENGER
+//******************************************************************************
+message channelConfigMsg {
+  bool enable = 1;
+  uint32 duration = 2;
+  uint32 ton1 = 3;
+  uint32 toff1 = 4;
+  uint32 ton2 = 5;
+  uint32 toff2 = 6;
+  uint32 cycle = 7;
+  uint32 rest = 8;
+  uint32 amp = 9;
+  uint32 chId = 10;
+}
+
+message channelsConfigMsg {
+  bool stiStartStop = 1;
+  uint32 gain = 2;
+  uint32 command = 3;
+  repeated channelConfigMsg config = 4 [(nanopb).max_count = 4];
+}
+
+message position {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message vectorChannel {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message beacon {
+  uint32 id = 1;
+  float distance = 2;
+}
+
+message quaternion       
+{
+	float q0 = 1;	        ///< scalar component
+	float q1 = 2;	        ///< x vector component
+	float q2 = 3;	        ///< y vector component
+	float q3 = 4;	        ///< z vector component
+}
+message fusionMsg {
+  // Deimention
+  float fPhiPl = 2; // Roll
+  float fThePl = 3; // Pitch
+  float fPsiPl = 4; // Yaw
+  
+  // Quaternion 
+  quaternion fqPl   = 5;
+  
+  // Angular Velocity
+  repeated float fOmega = 1 [(nanopb).max_count = 3];
+  
+  // Accel
+  vectorChannel fAccGl = 6;
+
+  // IMU
+  float imuOmega = 7;
+  float imuAbsoluteLinearSpeed = 8;
+}
+
+message positionMsg {
+  position imuPosition = 1;
+  repeated beacon beacons = 2 [(nanopb).max_count = 4];
+  position uwbPosition = 3;
+  float speedMagCms = 4;
+}
+
+message stimulationCommand {
+  bool ch1En = 1;
+  bool ch2En = 2;
+  bool ch3En = 3;
+}
+
+message devInfo {
+  float batteryMV = 1;
+}
+
+message sensorMsg {
+  oneof type {
+    fusionMsg fusionMsg = 1;
+    positionMsg positionMsg = 2;
+
+    channelsConfigMsg channelCfg = 3;
+    stimulationCommand stimulationCommand = 4;
+    stimulationPkg.stimulationMsg stimulationMsg = 5;
+    devInfo devInfo = 6;
+    navigationPkg.navigationMsg navigationMsg = 7;
+  }
+}
+

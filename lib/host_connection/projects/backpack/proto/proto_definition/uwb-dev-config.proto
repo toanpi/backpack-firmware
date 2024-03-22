@@ -1,0 +1,176 @@
+syntax = "proto3";
+import "nanopb.proto";
+package uwbDevPkg;
+
+
+message uwbPos {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+enum OpModeCode {
+  TAG           = 0;
+  ANCHOR        = 1;
+  TAG_ANCHOR    = 2;
+}
+
+enum chanelCode {
+  CH_UNKOWN = 0;
+  CH_1      = 1;
+  CH_2      = 2;
+  CH_3      = 3;
+  CH_4      = 4;
+  CH_5      = 5;
+  // CH_6      = 6;
+  CH_7      = 7;
+  // CH_8      = 8;
+  // CH_9      = 9;
+  // CH_10     = 10;
+  // CH_11     = 11;
+}
+
+enum rxDetectThresholdCode {
+  RDT_NORMAL = 0;
+  RDT_LOW    = 1;
+}
+
+// constants for specifying the (Nominal) mean Pulse Repetition Frequency
+// These are defined for direct write (with a shift if necessary) to CHAN_CTRL and TX_FCTRL regs
+enum pulseRepFreqCode {
+  DWT_PRF_UNKNOWN = 0;
+  DWT_PRF_16M     = 1;   //!< UWB PRF 16 MHz
+  DWT_PRF_64M     = 2;   //!< UWB PRF 64 MHz
+}
+
+//! constants for selecting the bit rate for data TX (and RX)
+//! These are defined for write (with just a shift) the TX_FCTRL register
+enum dataRateCode {
+  DWT_BR_110K     = 0;   //!< UWB bit rate 110 kbits/s
+  DWT_BR_850K     = 1;   //!< UWB bit rate 850 kbits/s
+  DWT_BR_6M8      = 2;   //!< UWB bit rate 6.8 Mbits/s
+  // DWT_BR_UNKNOWN  = 3;
+}
+
+//! constants for specifying TX Preamble length in symbols
+//! These are defined to allow them be directly written into byte 2 of the TX_FCTRL register
+//! (i.e. a four bit value destined for bits 20..18 but shifted left by 2 for byte alignment)
+enum preambleLenCode {
+  DWT_PLEN_UNKNOWN  = 0;
+  DWT_PLEN_4096     = 0x0C;  //! Standard preamble length 4096 symbols
+  DWT_PLEN_2048     = 0x28;  //! Non-standard preamble length 2048 symbols
+  DWT_PLEN_1536     = 0x18;  //! Non-standard preamble length 1536 symbols
+  DWT_PLEN_1024     = 0x08;  //! Standard preamble length 1024 symbols
+  DWT_PLEN_512      = 0x34;  //! Non-standard preamble length 512 symbols
+  DWT_PLEN_256      = 0x24;  //! Non-standard preamble length 256 symbols
+  DWT_PLEN_128      = 0x14;  //! Non-standard preamble length 128 symbols
+  DWT_PLEN_64       = 0x04;  //! Standard preamble length 64 symbols
+}
+
+
+//! constants for specifying Preamble Acquisition Chunk (PAC) Size in symbols
+enum pacSizeCode {
+  DWT_PAC8  = 0;      //!< PAC  8 (recommended for RX of preamble length  128 and below
+  DWT_PAC16 = 1;      //!< PAC 16 (recommended for RX of preamble length  256
+  DWT_PAC32 = 2;      //!< PAC 32 (recommended for RX of preamble length  512
+  DWT_PAC64 = 3;      //!< PAC 64 (recommended for RX of preamble length 1024 and up
+  // DWT_PAC_UNKNOWN = 4;
+}
+
+enum preambleCode {
+  PRECODE_00 = 0;
+  PRECODE_01 = 1;
+  PRECODE_02 = 2;
+  PRECODE_03 = 3;
+  PRECODE_04 = 4;
+  PRECODE_05 = 5;
+  PRECODE_06 = 6;
+  PRECODE_07 = 7;
+  PRECODE_08 = 8;
+  PRECODE_09 = 9;
+  PRECODE_10 = 10;
+  PRECODE_11 = 11;
+  PRECODE_12 = 12;
+  PRECODE_13 = 13;
+  PRECODE_14 = 14;
+  PRECODE_15 = 15;
+  PRECODE_16 = 16;
+  PRECODE_17 = 17;
+  PRECODE_18 = 18;
+  PRECODE_19 = 19;
+  PRECODE_20 = 20;
+}
+//*****************************************************************************
+// COMMON DEVICE CONFIGURATION
+//*****************************************************************************
+message uwbDevConfig {
+  OpModeCode opMode = 1;
+  uint32 address = 2;
+  uwbPos position = 3;
+  uint32 txDelay = 4;
+  uint32 rxDelay = 5;
+  chanelCode channelNumber = 6;       // valid range is 1 to 11
+  preambleCode preambleCode = 7;            // 00 = use NS code, 1 to 24 selects code
+  pulseRepFreqCode pulseRepFreq = 8;  // NOMINAL_4M, NOMINAL_16M, or NOMINAL_64M
+  dataRateCode dataRate = 9;          // DATA_RATE_1 (110K), DATA_RATE_2 (850K), DATA_RATE_3 (6M81)
+  preambleLenCode preambleLen = 10;   // values expected are 64, (128), (256), (512), 1024, (2048), and 4096
+  pacSizeCode pacSize = 11;
+  uint32 nsSFD = 12;
+  uint32 sfdTO = 13;                  //!< SFD timeout value (in symbols) e.g. preamble length (128) + SFD(8) - PAC + some margin ~ 135us... DWT_SFDTOC_DEF; //default value
+  rxDetectThresholdCode rxDetectThreshold = 14; // Receiver Detection Threshold
+  uint32 rangingIntervalMs = 15;
+  bool enSmoothingAlgo = 16;
+  uint32 smoothMaxSpeed = 17;
+  float smoothE1 = 18;
+  // uint32 panId = 19;
+}
+
+message uwbNetworkCreateConfig {
+  uint32 panId = 1;
+  OpModeCode opMode = 2;
+  // chanelCode channelNumber = 3;       // valid range is 1 to 11
+}
+
+/* UWB Smooth Algo */
+message uwbSmoothAlgoCfg {
+  bool enable = 1;
+  uint32 maxSpeed = 2;
+  float e1 = 3;
+  uwbPos startPoint = 4;
+}
+
+enum txPowerMode {
+  TX_POWER_CALIBRATED_SMART = 0;
+  TX_POWER_SMART = 1;
+  TX_POWER_MANUAL = 2;
+}
+
+
+/* Test Mode */
+message testNodeInfo {
+  uint32 address = 1;
+}
+
+message uwbTestModeCfg {
+  bool isEnter = 1;
+  bool isExit = 2;
+  repeated testNodeInfo nodes = 3 [(nanopb).max_count = 10];
+}
+
+/* Calibration */
+message uwbCalibCfg {
+  // TX Power
+  txPowerMode mode = 1;
+
+  uint32 phrPercent = 2;
+  uint32 payloadPercent = 3;
+
+  // For smart power
+  uint32 payload500usPercent = 4;
+  uint32 payload250usPercent = 5;
+  uint32 payload125usPercent = 6;
+
+  // Reset 
+  bool needReset = 7;
+  float maxTxPowerDB = 8;
+}

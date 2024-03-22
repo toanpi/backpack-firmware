@@ -1,0 +1,55 @@
+syntax = "proto3";
+import "uwb-dev.proto";
+import "ble-central.proto";
+import "sensor.proto";
+import "collector.proto";
+import "file-transfer.proto";
+import "algorithm.proto";
+import "command.proto";
+
+package backpackPkg;
+
+
+
+//******************************************************************************
+//  COMMON BACKPACK DEVICE INFO
+//******************************************************************************
+enum prototype {
+  UWB_DEV = 0;
+  BLE_DEV = 1;
+  SUBGHZ_NODE = 2;
+}
+
+message backpackDevInfo {
+  prototype prototype = 1;
+  uint64 address = 2;
+}
+
+//******************************************************************************
+//  BACKPACK DEVICE MESSENGER
+//******************************************************************************
+message backpackMsg {
+  // Header
+  uint32 version = 1;
+  uint32 srcAddr = 2;
+  uint32 desAddr = 3;
+
+  oneof type {
+    // UWB Message
+    uwbDevPkg.uwbDevMsg uwbDevMsg = 10;
+    // Sensor Message
+    sensorPkg.sensorMsg sensorMsg = 11;
+    // Device Info 
+    backpackDevInfo devInfo = 12;
+    // Ble Message
+    bleCentralPkg.bleCentralMsg bleMsg = 13;
+    // Collector
+    collectorPkg.collectorMsg collectorMsg = 14;
+    // File transfer
+    fileTransferPkg.fileMsg fileMsg = 15;
+    // Algorithm message
+    algoPkg.algoMsg algoMsg = 16;
+    // Command message
+    cmdPkg.cmdMsg cmdMsg = 17;
+  }
+}
