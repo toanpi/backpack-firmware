@@ -1,5 +1,5 @@
 /************************************************************************************************************
-Module:       dev_test
+Module:       dw_os
 
 Revision:     1.0
 
@@ -10,9 +10,9 @@ Notes:        ---
 History:
 Date          Name      Changes
 -----------   ----      -------------------------------------------------------------------------------------
-07/15/2022    TH       Began Coding    (TH = Toan Huynh)
+03/26/2024    TH       Began Coding    (TH = Toan Huynh)
 
-COPYRIGHT © 2022 TOAN HUYNH. ALL RIGHTS RESERVED.
+COPYRIGHT © 2024 TOAN HUYNH. ALL RIGHTS RESERVED.
 
 THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL! NO PART OF THIS
 SOURCE MAY BE DISCLOSED IN ANY MANNER TO A THIRD PARTY WITHOUT PRIOR WRITTEN
@@ -22,10 +22,9 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
-#include <stdio.h>
-#include "instance.h"
-#include "tx_power.h"
-#include "dev_test.h"
+#include <stdint.h>
+#include <zephyr/kernel.h>
+
 
 
 //###########################################################################################################
@@ -63,7 +62,6 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 
 
-
 //###########################################################################################################
 //      PRIVATE FUNCTION PROTOTYPES
 //###########################################################################################################
@@ -73,38 +71,60 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      PUBLIC FUNCTIONS
 //###########################################################################################################
-/********************************************************************************
-Function:
-	configure_continuous_txspectrum_mode()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
- 	Test application for production to check the TX power in various modes
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 07/15/2022
-*********************************************************************************/
-void configure_continuous_txspectrum_mode(void)
+
+void host_connection_lock(void)
 {
-	sys_printf("Enter Spectrum Test..\n\r");
 
-	// configure DW1000 into Continuous TX mode
-	instance_starttxtest(0x1000);
-	// measure the power
-	// Spectrum Analyser set:
-	// FREQ to be channel default e.g. 3.9936 GHz for channel 2
-	// SPAN to 1GHz
-	// SWEEP TIME 1s
-	// RBW and VBW 1MHz
-	// measure channel power
-
-	// user has to reset the board to exit mode
-	Sleep(MAX_TIMEOUT);
 }
+
+void host_connection_unlock(void)
+{
+
+}
+
+
+void* sys_malloc(size_t size) {
+  return k_malloc(size); 
+}
+
+void sys_free(void* ptr) { 
+  k_free(ptr); 
+}
+
+
+void deca_sleep(unsigned int time_ms) {
+	k_sleep(K_MSEC(time_ms));
+}
+
+void Sleep(uint32_t delay) {
+    deca_sleep(delay);
+}
+
+void usleep(uint32_t delay_us) {
+    k_sleep(K_USEC(delay_us));
+}
+
+
+/* @fn    portGetTickCnt
+ * @brief wrapper for to read a SysTickTimer, which is incremented with
+ *        CLOCKS_PER_SEC frequency.
+ *        The resolution of time32_incr is usually 1/1000 sec.
+ * */
+unsigned long portGetTickCnt(void)
+{
+    return k_uptime_get_32();
+}
+
+/* @fn 	  portGetTickCntMicro
+* @brief  function to read a SysTickTimer modified by its count to get a higher resolution timestamp.
+* 		  The resolution is usually one microsecond.
+* */
+unsigned long long portGetTickCntMicro(void)
+{
+    return k_uptime_get();
+}
+
+
 
 //###########################################################################################################
 //      PRIVATE FUNCTIONS
@@ -124,5 +144,5 @@ void configure_continuous_txspectrum_mode(void)
 
 
 //###########################################################################################################
-//      END OF dev_test.c
+//      END OF dw_os.c
 //###########################################################################################################

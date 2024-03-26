@@ -25,6 +25,7 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 // #INCLUDES
 //###########################################################################################################
+#include <application_definitions.h>
 
 
 
@@ -91,7 +92,8 @@ bool tx_power_absolute_set(tx_power_t *cfg);
 tx_power_t tx_power_convert_absolute_config(tx_power_percent_t *cfg);
 void showTxPower(void);
 float tx_power_max_db(void);
-
+bool tx_power_init(tx_power_percent_t *cfgTx, instanceConfig_t *configChannel, uint32_t *p_power);
+uint8_t tx_power_get_dg_delay(instanceConfig_t* configChannel);
 
 
 //###########################################################################################################

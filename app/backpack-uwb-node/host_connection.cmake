@@ -6,29 +6,49 @@ cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH APP_DIR)
 cmake_path(GET APP_DIR PARENT_PATH LIB_DIR)
 
 set(HOST_CONN_PATH ${LIB_DIR}/lib/host_connection)
+set(HOST_CONN_PROTO_PATH ${LIB_DIR}/lib/host_connection/projects/backpack/proto/out_c)
+set(HOST_CONN_PARSE_PATH ${LIB_DIR}/lib/host_connection/projects/backpack/parser)
 
-# Should be included in the project
-# include_directories(include/dw1000/platform)
-
-file(GLOB_RECURSE HOST_CONN_SOURCES 
-${HOST_CONN_PATH}/source/*.[ch]
-${HOST_CONN_PATH}/projects/backpack/parser/uwb_dev/*.[ch]
-${HOST_CONN_PATH}/projects/backpack/parser/backpack/*.[ch]
-${HOST_CONN_PATH}/projects/backpack/proto/out_c/*.[ch]
+# Source files
+set(HOST_CONN_SOURCES
+${HOST_CONN_PATH}/projects/backpack/parser/backpack/backpack_parser.c
+${HOST_CONN_PATH}/projects/backpack/parser/uwb_dev/uwb_dev_parser.c
+${HOST_CONN_PROTO_PATH}/algorithm.pb.c
+${HOST_CONN_PROTO_PATH}/backpack-config.pb.c
+${HOST_CONN_PROTO_PATH}/backpack.pb.c
+${HOST_CONN_PROTO_PATH}/ble-central.pb.c
+${HOST_CONN_PROTO_PATH}/collector.pb.c
+${HOST_CONN_PROTO_PATH}/command.pb.c
+${HOST_CONN_PROTO_PATH}/file-transfer.pb.c
+${HOST_CONN_PROTO_PATH}/hw_logger.pb.c
+${HOST_CONN_PROTO_PATH}/log.pb.c
+${HOST_CONN_PROTO_PATH}/navigation.pb.c
+${HOST_CONN_PROTO_PATH}/sensor.pb.c
+${HOST_CONN_PROTO_PATH}/stimulation.pb.c
+${HOST_CONN_PROTO_PATH}/uwb-anchor.pb.c
+${HOST_CONN_PROTO_PATH}/uwb-dev-config.pb.c
+${HOST_CONN_PROTO_PATH}/uwb-dev.pb.c
+${HOST_CONN_PATH}/source/file_transfer/file_transfer.c
+${HOST_CONN_PATH}/source/host_connection/host_connection.c
+${HOST_CONN_PATH}/source/packet/packet.c
+${HOST_CONN_PATH}/source/proto_utilities/proto_utilities.c
+${HOST_CONN_PATH}/source/utils/crc32.c
+${HOST_CONN_PATH}/third_parties/protobuf/nanopb/nanopb-0.4.7-macosx-x86/pb_common.c
+${HOST_CONN_PATH}/third_parties/protobuf/nanopb/nanopb-0.4.7-macosx-x86/pb_decode.c
+${HOST_CONN_PATH}/third_parties/protobuf/nanopb/nanopb-0.4.7-macosx-x86/pb_encode.c
 )
 
-file(GLOB HOST_CONN_SOURCES
-${HOST_CONN_PATH}/third_parties/protobuf/nanopb/nanopb-0.4.7-macosx-x86/*.[ch]
+# Include directories
+include_directories(
+${HOST_CONN_PARSE_PATH}/backpack
+${HOST_CONN_PARSE_PATH}/uwb_dev
+${HOST_CONN_PROTO_PATH}
+${HOST_CONN_PATH}/source
+${HOST_CONN_PATH}/source/file_transfer
+${HOST_CONN_PATH}/source/host_connection
+${HOST_CONN_PATH}/source/packet
+${HOST_CONN_PATH}/source/proto_utilities
+${HOST_CONN_PATH}/source/utils
+${HOST_CONN_PATH}/third_parties/protobuf/nanopb/nanopb-0.4.7-macosx-x86
 )
 
-file(GLOB_RECURSE HC_UNUSED_SOURCES 
-${HOST_CONN_PATH}/source/file_transfer/rgb_image_ft_file.c
-${HOST_CONN_PATH}/source/file_transfer/ir_image_ft_file.c
-${HOST_CONN_PATH}/source/file_transfer/hwlog_ft_file.c
-)
-# Remove file transfer files
-list(REMOVE_ITEM HOST_CONN_SOURCES ${HC_UNUSED_SOURCES})
-
-# Header files
-file(GLOB_RECURSE HOST_CONN_DIRS LIST_DIRECTORIES true ${HOST_CONN_PATH})
-include_directories(${HOST_CONN_DIRS})

@@ -174,16 +174,17 @@ void cfgInit(void)
 	 *	3 sectors
 	 *	starting at NVS_PARTITION_OFFSET
 	 */
+
 	fs.flash_device = NVS_PARTITION_DEVICE;
 	if (!device_is_ready(fs.flash_device)) {
-		printk("Flash device %s is not ready\n", fs.flash_device->name);
+		__ASSERT(true, "Flash device %s is not ready\n", fs.flash_device->name);
 		return;
 	}
 
 	fs.offset = NVS_PARTITION_OFFSET;
 	rc = flash_get_page_info_by_offs(fs.flash_device, fs.offset, &info);
 	if (rc) {
-		printk("Unable to get page info\n");
+		__ASSERT(true, "Unable to get page info\n");
 		return;
 	}
 
@@ -192,7 +193,7 @@ void cfgInit(void)
 
 	rc = nvs_mount(&fs);
 	if (rc) {
-		printk("Flash Init failed\n");
+		__ASSERT(true, "Flash Init failed");
 		return;
 	}
 

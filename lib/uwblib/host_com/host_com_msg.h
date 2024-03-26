@@ -64,7 +64,6 @@ bool host_com_send_neighbor_list(void);
 bool host_com_send_host_setup(void);
 bool host_com_send_test_msg_res(uint32_t arg);
 void host_com_print_log(const char *format, ...);
-void host_com_send_log(const char *format, ...);
 
 //###########################################################################################################
 // END OF host_com_msg.h

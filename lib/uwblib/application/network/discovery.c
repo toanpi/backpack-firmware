@@ -30,6 +30,7 @@ CONSENT OF TOAN HUYNH.
 #include "instance.h"
 #include "network_mac.h"
 #include "net_node.h"
+#include <app_monitor.h>
 
 
 
@@ -172,7 +173,7 @@ void set_discovery_mode(struct TDMAHandler *this, DISCOVERY_MODE discovery_mode,
 		this->collectInfStartTime = time_now;
 		this->discovery_mode_duration = this->collectInfDuration;
 		this->discovery_mode_expires = TRUE;
-		sys_printf("COLLECT INF REG IN %u\r\n", this->discovery_mode_duration);
+		sys_printf("COLLECT INF REG IN %lu\r\n", this->discovery_mode_duration);
 		break;
 	}
 	case WAIT_INF_INIT:
@@ -360,7 +361,7 @@ void set_discovery_mode(struct TDMAHandler *this, DISCOVERY_MODE discovery_mode,
 		this->discovery_mode_duration = (uint32)(get_dt64(time_now_us, latest_tnext) / 1000);
 		this->discovery_mode_expires = TRUE;
 
-		sys_printf("NUM NET %u - DISCOVERY DURATION: %u\r\n", num_sub_networks, this->discovery_mode_duration);
+		sys_printf("NUM NET %u - DISCOVERY DURATION: %lu\r\n", num_sub_networks, this->discovery_mode_duration);
 
 		this->free_slots(&this->uwbListTDMAInfo[0]);
 		this->deconflict_slot_assignments(this);

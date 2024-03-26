@@ -73,23 +73,14 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      MODULE LEVEL VARIABLES
 //###########################################################################################################
-// static SemaphoreHandle_t irqSemaphore;
-// static SemaphoreHandle_t uwbSem;
-// static SemaphoreHandle_t algoSemaphore;
 static bool isInit = false;
-static bool isInitCb = false;
+// static bool isInitCb = false;
 
 
 //###########################################################################################################
 //      PRIVATE FUNCTION PROTOTYPES
 //###########################################################################################################
 
-#if ENABLE_SHOW_STATUS
-static void show_status(void);
-#endif
-
-// static bool uwb_lock(void);
-// static bool uwb_unlock(void);
 
 //###########################################################################################################
 //      PUBLIC FUNCTIONS
@@ -179,10 +170,9 @@ Author, Date:
 int dw_main_init(void)
 {
 	instance_data_t *inst = instance_get_local_structure_ptr(0);
-	struct TDMAHandler *tdma_handler = (struct TDMAHandler *)get_tdma_handler();
 
 	/* turn off all the LEDs */
-	// led_off(LED_ALL); 
+	led_off(LED_ALL); 
 
 	peripherals_init();
 
@@ -195,7 +185,7 @@ int dw_main_init(void)
 	/* Disable DW1000 IRQ until we configure the application */
 	port_DisableEXT_IRQ(); 
 
-	// led_off(LED_ALL);
+	led_off(LED_ALL);
 
 	if (inittestapplication() == (uint32)-1)
 	{
@@ -229,225 +219,10 @@ int dw_main_init(void)
 	return 0;
 }
 
-// int dw_main_loop(void) 
-// {
-// 	// Initializing the low level radio handling
-//   // algoSemaphore = xSemaphoreCreateMutex();
-// 	// uwbSem = xSemaphoreCreateCounting(0xFFFFFFFF, 0);
-
-// 	uint32 waiting_duration = 0;
-
-// #if ENABLE_SHOW_STATUS
-// 	uint32 time_accum = 0;
-// #endif
-
-// 	/* Main loop */
-// 	while (1)
-// 	{
-// 		/* Run some statictis task */
-// 		dw_task_setup();
-
-// 		/* Wait until interrupt or timeout occurs */
-// 		xSemaphoreTake(uwbSem, waiting_duration);
-
-// 		waiting_duration = 0;
-
-// 		if (uwb_lock())
-// 		{
-// 			/* Run the state machine */
-// 			waiting_duration = app_state_machine_run(inst, tdma_handler);
-// 			uwb_unlock();
-// 		}
-
-// 		if (waiting_duration != MAX_TIMEOUT)
-// 		{
-// 			waiting_duration = waiting_duration / portTICK_PERIOD_MS;
-// 		}
-
-// 	}
-// }
-
-/********************************************************************************
-Function:
-	dw_cb_main()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 02/22/2022
-*********************************************************************************/
-#if 0
-void dw_cb_main(void)
-{
-	irqSemaphore = xSemaphoreCreateBinary();
-
-	isInitCb = true;
-
-	while (1)
-	{
-		/* Run some statictis task */
-		uwb_cb_task_setup();
-
-		if (xSemaphoreTake(irqSemaphore, portMAX_DELAY))
-		{
-			if (uwb_lock())
-			{
-				process_deca_irq();
-				uwb_unlock();
-			}
-		}
-	}
-}
-
-/********************************************************************************
-Function:
-	uwb_isr_callback()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 02/20/2022
-*********************************************************************************/
-void uwb_isr_callback(void)
-{
-  if(isInit && isInitCb)
-  {
-		BaseType_t higherPriorityTaskWoken;
-    xSemaphoreGiveFromISR(irqSemaphore, &higherPriorityTaskWoken);
-    portYIELD_FROM_ISR(higherPriorityTaskWoken);
-  }
-}
-
-/********************************************************************************
-Function:
-	dw_app_signal()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 02/22/2022
-*********************************************************************************/
-void dw_app_signal(void)
-{
-  if(isInit)
-  {
-    xSemaphoreGive(uwbSem);
-  }
-}
-
 //###########################################################################################################
 //      PRIVATE FUNCTIONS
 //###########################################################################################################
-/********************************************************************************
-Function:
-	uwb_lock()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 02/20/2022
-*********************************************************************************/
-static bool uwb_lock(void)
-{
-  return xSemaphoreTake(algoSemaphore, portMAX_DELAY) == pdTRUE;
-}
 
-/********************************************************************************
-Function:
-	uwb_unlock()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 02/20/2022
-*********************************************************************************/
-static bool uwb_unlock(void)
-{
-  return xSemaphoreGive(algoSemaphore) == pdTRUE;
-}
-
-/********************************************************************************
-Function:
-	show_status()
-Input Parameters:
-	---
-Output Parameters:
-	---
-Description:
-	---
-Notes:
-	---
-Author, Date:
-	Toan Huynh, 02/22/2022
-*********************************************************************************/
-#if ENABLE_SHOW_STATUS
-static void show_status(void)
-{
-	instance_data_t *inst = instance_get_local_structure_ptr(0);
-
-	if (!inst->isInDeepSleep)
-	{
-		if (inst->operationMode == CONFIG_OPERATION_TAG && inst->mode == TAG)
-		{
-			return;
-		}
-
-		if (!inst->canPrintLCD)
-		{
-			return;
-		}
-	}
-
-#if CONFIG_ENABLE_HOST_CONNECTION
-	send_device_net_info();
-#else
-	uint64 addr = instance_get_addr();
-	uint8 num_neighbors = instfindnumneighbors(inst);
-	uint8 num_hidden = instfindnumhidden(inst);
-	char status[20] = {0};
-
-	if (inst->mode == DISCOVERY)
-	{
-		strcpy(status, "SEARCHING");
-	}
-	else
-	{
-		strcpy(status, "CONNECTED");
-	}
-
-	sys_printf("0x%04X %s\r\n", (uint32_t)addr, status);
-	sys_printf("N%02u H%02u\r\n", num_neighbors, num_hidden);
-	// sys_printf("N%02u H%02u %05.2fm\r\n", num_neighbors, num_hidden, range_result);
-	// sys_printf("%05.1fdB %05.2fm\r\n", inst->avgRSL, range_result);
-#endif
-}
-#endif
-#endif
 
 
 //###########################################################################################################

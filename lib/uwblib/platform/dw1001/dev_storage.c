@@ -26,9 +26,6 @@ CONSENT OF TOAN HUYNH.
 #include <stdbool.h>
 #include <string.h>
 #include "dev_storage.h"
-// #include "FreeRTOS.h"
-// #include "task.h"
-// #include "fds.h"
 
 //###########################################################################################################
 //      TESTING #DEFINES

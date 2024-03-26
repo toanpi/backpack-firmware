@@ -116,32 +116,6 @@ bool host_com_forward(uint8_t *p_data, uint32 data_len)
 }
 
 /********************************************************************************
-Function:
-  host_com_send()
-Input Parameters:
-  ---
-Output Parameters:
-  ---
-Description:
-  Send log to host
-Notes:
-  ---
-Author, Date:
-  Toan Huynh, 04/13/2022
-*********************************************************************************/
-void host_com_send_log(const char *format, ...)
-{
-  char buffer[256] = {0};
-  va_list args;
-
-  va_start(args, format);
-  vsprintf(buffer, format, args);
-  va_end(args);
-
-  host_com_send_log(buffer, strlen(buffer) + 1);
-}
-
-/********************************************************************************
 Input:
   ---
 Output:

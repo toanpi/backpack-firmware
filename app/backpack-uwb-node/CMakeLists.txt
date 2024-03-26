@@ -7,7 +7,7 @@ project(backpack-uwb-node)
 ########################################################################################
 # Library
 ########################################################################################
-include_directories(include/dw1000/platform) # Prerequisites
+include_directories(include) # Prerequisites
 include(host_connection.cmake)
 include(uwblib.cmake)
 # target_link_libraries(app PRIVATE hello_world)
@@ -15,13 +15,19 @@ include(uwblib.cmake)
 ########################################################################################
 # Application Sources
 ########################################################################################
-set(GLOB_RECURSE APP_SOURCE src)
+set(APP_SOURCE 
+src/apps/anchor/main.c
+src/dw1000/dw1000_board.c
+src/zephyr_os/dw_decawave.c 
+src/zephyr_os/dw_os.c 
+src/zephyr_os/dw_storage.c
+)
 
 ########################################################################################
 # Sources
 ########################################################################################
 target_sources(app PRIVATE 
 ${APP_SOURCE}
-${UWBLIB_SOURCES} 
 ${HOST_CONN_SOURCES}
+${UWBLIB_SOURCES} 
 )

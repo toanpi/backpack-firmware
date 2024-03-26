@@ -26,6 +26,8 @@ CONSENT OF TOAN HUYNH.
 #include "deca_device_api.h"
 #include "deca_regs.h"
 #include "uwb_dev_setting.h"
+#include <port_mcu.h>
+#include <tx_power.h>
 
 
 //###########################################################################################################
@@ -80,8 +82,7 @@ extern const uint8 chan_idx[];
 //###########################################################################################################
 
 
-
-//###########################################################################################################
+//##########################################################################################################
 //      PUBLIC FUNCTIONS
 //###########################################################################################################
 /********************************************************************************
@@ -100,7 +101,6 @@ Author, Date:
 *********************************************************************************/
 void instance_config(instance_data_t *inst)
 {
-	int instance = 0;
 	uint32 power = 0;
 	instanceConfig_t *config = &inst->chConfig;
 
@@ -140,7 +140,7 @@ void instance_config(instance_data_t *inst)
 
 	if ((power == 0x0) || (power == 0xFFFFFFFF)) // if there are no calibrated values... need to use defaults
 	{
-		tx_power_init(&inst->txPower, config, &inst->configTX.power);
+		tx_power_init(&inst->txPower, config, (uint32_t *)&inst->configTX.power);
 	}
 	else
 	{

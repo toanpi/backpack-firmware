@@ -282,7 +282,7 @@ void showTxPower(void)
 	uint32 prf = (inst->chConfig.pulseRepFreq == DWT_PRF_16M) ? 16 : 64;
 	tx_power_t power = tx_power_convert_absolute_config(&inst->txPower);
 
-	sys_printf("TX Channel: %d - PRF: %dM\n\r", chan, prf);
+	sys_printf("TX Channel: %ld - PRF: %ldM\n\r", chan, prf);
 	sys_printf("Tx Power: \n\r");
 
 	if (power.mode == TX_POWER_MANUAL)

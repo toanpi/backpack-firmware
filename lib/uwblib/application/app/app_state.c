@@ -102,7 +102,7 @@ bool app_state_exec(instance_data_t *inst,
   }
   else
   {
-    sys_printf("[%u][ERR] %s\r\n", timestamp_get_ms(), get_inst_states_string(inst->testAppState));
+    sys_printf("[%lu][ERR] %s\r\n", timestamp_get_ms(), get_inst_states_string(inst->testAppState));
 
     failed_hdl(inst);
     ret = false;
@@ -282,7 +282,7 @@ static bool app_state_go_sleep(instance_data_t *inst, struct TDMAHandler *tdma_h
       *p_timeout = inst->sleepTime_ms;
     }
 
-    sys_printf("[%u] ENTER SLEEP IN %u\r\n", inst->timeofSleep, inst->sleepTime_ms);
+    sys_printf("[%lu] ENTER SLEEP IN %lu\r\n", inst->timeofSleep, inst->sleepTime_ms);
 
     ret = true;
   }

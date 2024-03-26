@@ -22,6 +22,7 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
+#include <port_mcu.h>
 #include "network.h"
 #include "timestamp.h"
 #include "system_dbg.h"
@@ -1175,7 +1176,7 @@ bool check_timeouts(struct TDMAHandler *this)
 
 				if (instfindnumneighbors(inst) <= 0)
 				{
-					sys_printf("NEIGHBOR TIMEOUT: %u - DELTA: %u - NOW: %u - LAST COMM: %u\r\n",
+					sys_printf("NEIGHBOR TIMEOUT: %lu - DELTA: %lu - NOW: %lu - LAST COMM: %lu\r\n",
 								 timeout_ms,
 								 delta_t,
 								 time_now_ms,

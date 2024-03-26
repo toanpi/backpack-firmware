@@ -178,7 +178,7 @@ uint32 app_state_machine_run(instance_data_t *inst,  struct TDMAHandler *tdma_ha
 
 	if (timeout > 1000000)
 	{
-		sys_printf("ERROR TIMEOUT %u\n", timeout);
+		sys_printf("ERROR TIMEOUT %lu\n", timeout);
 	}
 
 	// only check timeouts if we aren't in the middle of ranging messages
@@ -420,7 +420,7 @@ static int app_event_handler(instance_data_t *inst, struct TDMAHandler *tdma_han
 		/* Node wakeup */
 		net_node_exit_sleep(inst);
 
-		sys_printf("[%u] EXIT SLEEP\r\n", timestamp_get_ms());
+		sys_printf("[%lu] EXIT SLEEP\r\n", timestamp_get_ms());
 
 		break;
 	}
@@ -809,7 +809,7 @@ static bool app_handler_rx_packet(instance_data_t *inst, struct TDMAHandler *tdm
 	
 			if (is_last_node_to_range(tdma_handler)) // Last node to range
 			{
-				sys_printf("[%u] RUN LOC ENGINE: ", timestamp_get_ms());
+				sys_printf("[%lu] RUN LOC ENGINE: ", timestamp_get_ms());
 				for (uint8 i = 0; i < NUM_NODE_TO_RANGE; i++)
 				{
 					sys_printf("%u ", tdma_handler->lastNodeRanged[i]);
@@ -925,7 +925,7 @@ static bool app_process_rx_timeout(instance_data_t *inst, struct TDMAHandler *td
 	instance_getevent(17);
 	inst_processtxrxtimeout(inst);
 
-	sys_printf("[%u] RX TIMEOUT ERROR\r\n", timestamp_get_ms());
+	sys_printf("[%lu] RX TIMEOUT ERROR\r\n", timestamp_get_ms());
 
 	return ret;
 }

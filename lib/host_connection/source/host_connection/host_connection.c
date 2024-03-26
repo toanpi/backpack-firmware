@@ -372,6 +372,8 @@ bool host_connection_process(uint8_t *p_data, uint32_t len, decode_f decode_func
 
   // Restore default write function
   host_connection_set_send_func(default_write);
+
+  return true;
 }
 
 /********************************************************************************

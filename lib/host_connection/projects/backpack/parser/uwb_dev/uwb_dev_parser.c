@@ -700,7 +700,7 @@ Author, Date:
 *********************************************************************************/
 static void set_smooth_algo(uwbDevPkg_uwbSmoothAlgoCfg *cfg)
 {
-  instance_data_t *inst = instance_get_local_structure_ptr(0);
+  // instance_data_t *inst = instance_get_local_structure_ptr(0);
 
   // Disable for now
   // inst_config_smooth_algo(inst, cfg->enable, cfg->maxSpeed, cfg->e1);

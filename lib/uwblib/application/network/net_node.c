@@ -22,6 +22,7 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
+#include <stdlib.h>
 #include "network_mac.h"
 #include "net_node.h"
 #include "instance.h"
@@ -214,7 +215,7 @@ bool net_node_blink_send(instance_data_t *inst, uint32 *p_timeout)
 		tdma_handler->last_blink_time = timestamp_get_ms();
 		tdma_handler->blinkPeriodRand = (uint32)rand() % BLINK_PERIOD_RAND_MS;
 
-		sys_printf("[%u][TX] SEND BLINK\r\n", tdma_handler->last_blink_time);
+		sys_printf("[%lu][TX] SEND BLINK\r\n", tdma_handler->last_blink_time);
 
 		if (p_timeout)
 		{
@@ -263,7 +264,7 @@ bool net_node_ranging_init_send(instance_data_t *inst, uint32 *p_timeout)
 
 		tdma_handler->set_discovery_mode((struct TDMAHandler *)tdma_handler, WAIT_INF_INIT, time_now);
 
-		sys_printf("[%u][TX] SEND RNG_INIT\r\n", time_now);
+		sys_printf("[%lu][TX] SEND RNG_INIT\r\n", time_now);
 
 		if (p_timeout)
 		{

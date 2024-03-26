@@ -1,5 +1,5 @@
 /************************************************************************************************************
-Module:       app_monitor
+Module:       port_mcu
 
 Revision:     1.0
 
@@ -10,48 +10,47 @@ Notes:        ---
 History:
 Date          Name      Changes
 -----------   ----      -------------------------------------------------------------------------------------
-08/24/2023    TH       Began Coding    (TH = Toan Huynh)
+03/26/2024    TH       Began Coding    (TH = Toan Huynh)
 
-COPYRIGHT © 2023 TOAN HUYNH. ALL RIGHTS RESERVED.
+COPYRIGHT © 2024 TOAN HUYNH. ALL RIGHTS RESERVED.
 
 THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL! NO PART OF THIS
 SOURCE MAY BE DISCLOSED IN ANY MANNER TO A THIRD PARTY WITHOUT PRIOR WRITTEN
 CONSENT OF TOAN HUYNH.
 ************************************************************************************************************/
 
-#ifndef _APP_MONITOR_H
-#define _APP_MONITOR_H
+#ifndef _PORT_MCU_H
+#define _PORT_MCU_H
 
 //###########################################################################################################
 // #INCLUDES
 //###########################################################################################################
 #include <stdint.h>
-#include <stdbool.h>
-#include "application_definitions.h"
-#include "instance.h"
+#include <string.h>
+#include <zephyr/kernel.h>
+#include <zephyr/sys/printk.h>
+
 
 //###########################################################################################################
 // DEFINED CONSTANTS
 //###########################################################################################################
-#define NUM_OF_RANGING_NEIHBOR          (4)
+// #define portTICK_PERIOD_MS  1
 
+#define sys_printf  printk
+#define db_printf   printk
 
 //###########################################################################################################
 // DEFINED TYPES
 //###########################################################################################################
-
-
-typedef struct
+typedef enum
 {
-    uint8 index;
-    uint64 addr;
-    position_t pos;
-    double distance;
-    double distance_rsl;
-    app_uwb_err error;
-} app_ranged_node_info_t;
+    LEDIDX_0, //LED0
+    LEDIDX_1, //LED1
+    LEDIDX_2, //LED2
+    LED_ALL,
+    LEDn
+} led_t;
 
-typedef void (*app_monitor_change_cb)(void);
 
 
 //###########################################################################################################
@@ -63,17 +62,43 @@ typedef void (*app_monitor_change_cb)(void);
 //###########################################################################################################
 // FUNCTION PROTOTYPES
 //###########################################################################################################
-bool app_monitor_add_ranging_node(int node_index);
-bool app_monitor_update_ranging_info(void);
-const app_ranged_node_info_t *get_last_ranged_info(uint32_t *num_devs);
-bool app_monitor_register_change(app_monitor_change_cb func);
-bool app_monitor_ranging_end(void);
-bool app_monitor_ranging_start(void);
-bool app_monitor_callback(void);
 
+void Sleep(uint32_t Delay);
+void deca_sleep(unsigned int time_ms);
 
+void port_set_dw1000_slowrate(void);
+void port_set_dw1000_fastrate(void);
+
+void port_wakeup_dw1000(void);
+void port_wakeup_dw1000_fast(void);
+
+void reset_DW1000(void);
+
+void port_EnableEXT_IRQ(void);
+void port_DisableEXT_IRQ(void);
+
+void port_disable_pin_connection(void);
+void port_enable_pin_connection(void);
+
+void device_reset_mcu(void);
+
+void* sys_malloc(size_t size);
+void sys_free(void* ptr);
+
+unsigned long portGetTickCnt(void);
+unsigned long long portGetTickCntMicro(void);
+
+int dw1000_board_hw_init(void);
+
+void usleep(uint32_t delay_us);
+
+int peripherals_init(void);
+
+void led_off(led_t led);
 
 //###########################################################################################################
-// END OF app_monitor.h
+// END OF port_mcu.h
 //###########################################################################################################
 #endif
+
+

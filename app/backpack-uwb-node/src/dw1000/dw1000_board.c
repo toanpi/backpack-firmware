@@ -1,5 +1,5 @@
 /************************************************************************************************************
-Module:       main
+Module:       dw1000_board
 
 Revision:     1.0
 
@@ -10,28 +10,24 @@ Notes:        ---
 History:
 Date          Name      Changes
 -----------   ----      -------------------------------------------------------------------------------------
-01/06/2022    TH       Began Coding    (TH = Toan Huynh)
+03/26/2024    TH       Began Coding    (TH = Toan Huynh)
 
-COPYRIGHT © 2022 TOAN HUYNH.  ALL RIGHTS RESERVED.
+COPYRIGHT © 2024 TOAN HUYNH. ALL RIGHTS RESERVED.
 
-THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL!  NO PART OF THIS
+THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL! NO PART OF THIS
 SOURCE MAY BE DISCLOSED IN ANY MANNER TO A THIRD PARTY WITHOUT PRIOR WRITTEN
 CONSENT OF TOAN HUYNH.
 ************************************************************************************************************/
-#define PW_LOG_MODULE_NAME "uwb-node"
 
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
-#include <zephyr/kernel.h>
-#include <zephyr/sys/printk.h>
-#include <zephyr/logging/log.h>
-#include <pw_log/log.h>
-#include "instance.h"
-#include "host_msg.h"
-#include <uwb_dev_parser.h>
-#include <app_main.h>
-#include <dw_main.h>
+#include <zephyr/sys/reboot.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
+#include <port_mcu.h>
+#include "pw_log/log.h"
+
 
 
 //###########################################################################################################
@@ -39,11 +35,18 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 
 
+
 //###########################################################################################################
 //      CONSTANT #DEFINES
 //###########################################################################################################
-// #define MAIN_UWB_STACK_SIZE (3 * 1024)
-// #define MAIN_UWB_PRIORITY   5
+/* The devicetree node identifier for the "led0" alias. */
+#define LED0_NODE DT_ALIAS(led0)
+#define LED1_NODE DT_ALIAS(led1)
+#define LED2_NODE DT_ALIAS(led2)
+
+#define DW1000_NODE DT_NODELABEL(ieee802154)
+
+
 
 //###########################################################################################################
 //      MACROS
@@ -56,34 +59,105 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 
 
+
 //###########################################################################################################
 //      CONSTANTS
 //###########################################################################################################
 
 
+
 //###########################################################################################################
 //      MODULE LEVEL VARIABLES
 //###########################################################################################################
-static struct k_sem uwb_sem;
+static const struct gpio_dt_spec gpio_irq = GPIO_DT_SPEC_GET_OR(DW1000_NODE, int_gpios, {0});
+static struct k_work dw1000_isr_work;
+static struct gpio_callback gpio_cb;
 
-K_MUTEX_DEFINE(uwb_mutex);
+
+static const struct gpio_dt_spec led0 = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+static const struct gpio_dt_spec led1 = GPIO_DT_SPEC_GET(LED1_NODE, gpios);
+static const struct gpio_dt_spec led2 = GPIO_DT_SPEC_GET(LED2_NODE, gpios);
+
+
 
 //###########################################################################################################
 //      PRIVATE FUNCTION PROTOTYPES
 //###########################################################################################################
-
+static int dw1000_hw_init_interrupt(void);
+static void dw1000_hw_interrupt_enable(void);
+static void dw1000_hw_interrupt_disable(void);
+static void init_leds(void);
 
 //###########################################################################################################
 //      PUBLIC FUNCTIONS
 //###########################################################################################################
+int dw1000_board_hw_init(void) {
+  
+	// Setup leds
+	init_leds();
 
+  /* Setup interrupt connected to DW1000 IRQ */
+  dw1000_hw_init_interrupt();
+  dw1000_hw_interrupt_enable();
+
+  return 0;
+}
+
+/********************************************************************************
+Input:
+  ---
+Output:
+  ---
+Description:
+  ---
+Author, Date:
+  Toan Huynh, 03/26/2024
+*********************************************************************************/
+void device_reset_mcu(void)
+{
+  // Perform a system reset
+  sys_reboot(SYS_REBOOT_COLD);
+}
+
+
+void led_off (led_t led)
+{
+	switch (led)
+	{
+	case LED_ALL:
+	  gpio_pin_set_dt(&led0, 0);
+	  gpio_pin_set_dt(&led1, 0);
+	  gpio_pin_set_dt(&led2, 0);
+		break;
+	default:
+		// do nothing for undefined led number
+		break;
+	}
+}
+
+
+/* @fn		port_DisableEXT_IRQ
+ * @brief	wrapper to disable DW_IRQ pin IRQ
+ * 			in current implementation it disables all IRQ from lines 5:9
+ * */
+inline void port_DisableEXT_IRQ(void)
+{
+	dw1000_hw_interrupt_disable();
+}
+
+/* @fn		port_EnableEXT_IRQ
+ * @brief	wrapper to enable DW_IRQ pin IRQ
+ * 			in current implementation it enables all IRQ from lines 5:9
+ * */
+inline void port_EnableEXT_IRQ(void)
+{
+	dw1000_hw_interrupt_enable();
+}
 
 
 //###########################################################################################################
 //      PRIVATE FUNCTIONS
 //###########################################################################################################
-
-
 /********************************************************************************
 Input:
   ---
@@ -94,82 +168,58 @@ Description:
 Author, Date:
   Toan Huynh, 03/26/2024
 *********************************************************************************/
-static void main_task(void *pvParameters, void *pvParameters2, void *pvParameters3) 
+int init_led(const struct gpio_dt_spec *led)
 {
-	uint32_t waiting_duration = 0;
-  instance_data_t *inst = instance_get_local_structure_ptr(0);
-  struct TDMAHandler *tdma_handler = (struct TDMAHandler *)get_tdma_handler();
+	int ret;
 
-  /* Setup some leds and interupt */
-  dw1000_board_hw_init();
-  
-	// Initializing the low level radio
-  dw_main_init();
-  
-  // init semaphore uwb_sem
-  k_sem_init(&uwb_sem, 0, 0xFFFFFFFF);
+	if (!gpio_is_ready_dt(led)) {
+		return -1;
+	}
 
-	/* Main loop */
-	while (1)
-	{
-		/* Wait until interrupt or timeout occurs */
-    k_sem_take(&uwb_sem, K_MSEC(waiting_duration));
+	ret = gpio_pin_configure_dt(led, GPIO_OUTPUT_ACTIVE);
+	if (ret < 0) {
+		return -1;
+	}
 
-		waiting_duration = 0;
-
-    if (k_mutex_lock(&uwb_mutex, K_FOREVER) == 0) {
-			/* Run the state machine */
-			waiting_duration = app_state_machine_run(inst, tdma_handler);
-      
-      k_mutex_unlock(&uwb_mutex);
-		}
-  }
+  return gpio_pin_set_dt(led, 1);
 }
 
-/********************************************************************************
-Function:
-  main()
-Input Parameters:
-  ---
-Output Parameters:
-  ---
-Description:
-  ---
-Notes:
-  ---
-Author, Date:
-  Toan Huynh, 01/06/2022
-*********************************************************************************/
-int main(void)
+static void init_leds(void)
 {
-  PW_LOG_INFO("Backpack UWB Node starting..");
-  printk("Backpack UWB Node starting..\n");
-  /* Initialize the host communication */
-  // host_com_init(1024, configMAX_PRIORITIES - 3, HOST_COM_MODE_ENCODE);
-
-  // host_com_register_interval_callback(5000, send_device_state_info);
-
-  uwb_dev_parser_init();
-
-  main_task(NULL, NULL, NULL);
-
-  /* This task is used for forwarding the received packets to the host */
-  // host_com_task_init(512, configMAX_PRIORITIES - 3);
-
-  return 0;
+  init_led(&led0);
+  init_led(&led1);
+  init_led(&led2);
 }
-
-
-
 //###########################################################################################################
 //      INTERRUPTS
 //###########################################################################################################
-void dw1000_hw_isr_work_handler(struct k_work * item) {
-  if (k_mutex_lock(&uwb_mutex, K_FOREVER) == 0) {
-    // Process the interrupt
-    dwt_isr();
-    k_mutex_unlock(&uwb_mutex);
-  }
+extern void dw1000_hw_isr_work_handler(struct k_work * item);
+
+static void dw1000_hw_isr(const struct device* dev, struct gpio_callback* cb,
+						  uint32_t pins)
+{
+	k_work_submit(&dw1000_isr_work);
+}
+
+static int dw1000_hw_init_interrupt(void)
+{
+	if (gpio_irq.port) {
+		k_work_init(&dw1000_isr_work, dw1000_hw_isr_work_handler);
+
+		gpio_pin_configure_dt(&gpio_irq, GPIO_INPUT);
+		gpio_init_callback(&gpio_cb, dw1000_hw_isr, BIT(gpio_irq.pin));
+		gpio_add_callback(gpio_irq.port, &gpio_cb);
+		gpio_pin_interrupt_configure_dt(&gpio_irq, GPIO_INT_EDGE_RISING);
+
+		PW_LOG_INFO("IRQ on %s pin %d", gpio_irq.port->name, gpio_irq.pin);
+		return 0;
+	} else {
+		PW_LOG_ERROR("IRQ pin not configured");
+		__ASSERT(true, "IRQ pin not configured");
+		return -ENOENT;
+	}
+
+	return 0;
 }
 
 /********************************************************************************
@@ -182,26 +232,20 @@ Description:
 Author, Date:
   Toan Huynh, 03/26/2024
 *********************************************************************************/
-void dw_app_signal(void)
+static void dw1000_hw_interrupt_enable(void)
 {
-  k_sem_give(&uwb_sem);
+	if (gpio_irq.port) {
+		gpio_pin_interrupt_configure_dt(&gpio_irq, GPIO_INT_EDGE_RISING);
+	}
 }
 
-/********************************************************************************
-Input:
-  ---
-Output:
-  ---
-Description:
-  ---
-Author, Date:
-  Toan Huynh, 03/26/2024
-*********************************************************************************/
-bool host_com_send_signal(uint8_t *p_data, uint32_t len)
+static void dw1000_hw_interrupt_disable(void)
 {
-  // TODO: Implement this function
-  return false;
+	if (gpio_irq.port) {
+		gpio_pin_interrupt_configure_dt(&gpio_irq, GPIO_INT_DISABLE);
+	}
 }
+
 
 //###########################################################################################################
 //      TEST HARNESSES
@@ -210,5 +254,5 @@ bool host_com_send_signal(uint8_t *p_data, uint32_t len)
 
 
 //###########################################################################################################
-//      END OF main.c
+//      END OF dw1000_board.c
 //###########################################################################################################

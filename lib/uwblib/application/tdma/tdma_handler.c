@@ -22,8 +22,9 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
+#include <stdlib.h>
+#include <port_mcu.h>
 #include "tdma_handler.h"
-#include "port_mcu.h"
 #include "instance.h"
 #include "lib.h"
 #include "system_dbg.h"
@@ -443,7 +444,7 @@ static void frame_sync(struct TDMAHandler *this, event_data_t *dw_event, uint8 f
 
 	if (diff_us > myFrameDuration)
 	{
-		sys_printf("FRAME SYNC: %u %s %u| DIFF: %03u - IDX: %03u\r\n",
+		sys_printf("FRAME SYNC: %u %s %lu| DIFF: %03lu - IDX: %03u\r\n",
 					 (uint32_t)this->uwbListTDMAInfo[0].frameStartTime / 1000,
 					 diff_add == TRUE ? "+" : "-",
 					 (uint32)diff_us / 1000,
@@ -563,7 +564,7 @@ static bool assign_slot(struct TDMAInfo *info, uint8 slot, bool safeAssign)
 		// if not assigned, increase slots size and add slot index to end of array (array is unsorted)
 		if (slot_assigned(info, slot) == FALSE)
 		{
-			uint8 *newSlots = sys_malloc(sizeof(uint8) * (info->slotsLength + 1));
+			uint8 *newSlots = (uint8 *)sys_malloc(sizeof(uint8) * (info->slotsLength + 1));
 			memcpy(&newSlots[0], &info->slots[0], sizeof(uint8) * info->slotsLength);
 			memcpy(&newSlots[info->slotsLength], &slot, 1);
 
@@ -577,7 +578,7 @@ static bool assign_slot(struct TDMAInfo *info, uint8 slot, bool safeAssign)
 	}
 	else
 	{
-		uint8 *newSlots = sys_malloc(sizeof(uint8) * (info->slotsLength + 1));
+		uint8 *newSlots = (uint8 *)sys_malloc(sizeof(uint8) * (info->slotsLength + 1));
 		memcpy(&newSlots[0], &info->slots[0], sizeof(uint8) * info->slotsLength);
 		memcpy(&newSlots[info->slotsLength], &slot, 1);
 

@@ -22,3 +22,6 @@ west build -p -b decawave_dwm1001_dev app/
 west build -p -b decawave_dwm1001_dev app/uwb-node/
 
 
+Now run the build tool on the generated build system:
+ninja -Cbuild ram_report
+
