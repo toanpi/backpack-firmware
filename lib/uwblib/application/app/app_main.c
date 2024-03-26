@@ -22,10 +22,8 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
-// #include "compiler.h"
 #include "port_mcu.h"
 #include "deca_device_api.h"
-#include "deca_spi.h"
 #include "deca_regs.h"
 #include "lib.h"
 #include "system_dbg.h"

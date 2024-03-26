@@ -22,15 +22,10 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
-// #include <FreeRTOS.h>
-// #include <semphr.h>
-// #include <task.h>
-// #include "compiler.h"
 #include "port_mcu.h"
 #include "instance.h"
 #include "tdma_handler.h"
 #include "deca_types.h"
-#include "deca_spi.h"
 #include "stdio.h"
 #include "deca_regs.h"
 #include "dev_cfg.h"

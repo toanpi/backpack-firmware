@@ -24,7 +24,6 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 #include "instance.h"
 #include "deca_device_api.h"
-#include "deca_spi.h"
 #include "deca_regs.h"
 #include "system_dbg.h"
 #include "timestamp.h"
