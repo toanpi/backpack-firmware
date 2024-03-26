@@ -659,29 +659,29 @@ void setup_DW1000RSTnIRQ(int enable)
 /* @fn		led_off
  * @brief	switch off the led from led_t enumeration
  * */
-void led_off (led_t led)
-{
-	switch (led)
-	{
-	case LEDIDX_0:
-		LEDS_OFF(BSP_LED_0_MASK);
-		break;
-	case LEDIDX_1:
-		LEDS_OFF(BSP_LED_1_MASK);
-		break;
-	case LEDIDX_2:
-		LEDS_OFF(BSP_LED_2_MASK);
-		break;
-	case LED_ALL:
-		LEDS_OFF(BSP_LED_0_MASK);
-		LEDS_OFF(BSP_LED_1_MASK);
-		LEDS_OFF(BSP_LED_2_MASK);
-		break;
-	default:
-		// do nothing for undefined led number
-		break;
-	}
-}
+// void led_off (led_t led)
+// {
+// 	switch (led)
+// 	{
+// 	case LEDIDX_0:
+// 		LEDS_OFF(BSP_LED_0_MASK);
+// 		break;
+// 	case LEDIDX_1:
+// 		LEDS_OFF(BSP_LED_1_MASK);
+// 		break;
+// 	case LEDIDX_2:
+// 		LEDS_OFF(BSP_LED_2_MASK);
+// 		break;
+// 	case LED_ALL:
+// 		LEDS_OFF(BSP_LED_0_MASK);
+// 		LEDS_OFF(BSP_LED_1_MASK);
+// 		LEDS_OFF(BSP_LED_2_MASK);
+// 		break;
+// 	default:
+// 		// do nothing for undefined led number
+// 		break;
+// 	}
+// }
 
 /* @fn		led_on
  * @brief	switch on the led from led_t enumeration

@@ -43,8 +43,11 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 // DEFINED MACROS
 //###########################################################################################################
-#define sys_malloc      pvPortMalloc
-#define sys_free        vPortFree
+// Zephyr Memory malloc and free
+// #define sys_malloc      k_malloc
+// #define sys_free        k_free
+// #define sys_malloc      pvPortMalloc
+// #define sys_free        vPortFree
 
 
 

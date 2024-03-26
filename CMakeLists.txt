@@ -2,4 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # add_subdirectory(lib)
-add_subdirectory(lib/libe)
+# add_subdirectory(lib/libe)
+# add_subdirectory(lib/host_connection)
+# add_subdirectory(lib/uwblib)
+

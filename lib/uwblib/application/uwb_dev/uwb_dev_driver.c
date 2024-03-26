@@ -218,7 +218,7 @@ Author, Date:
 *********************************************************************************/
 bool instance_config_sleep(instance_data_t * inst)
 {
-	bool status = TRUE;
+	bool status = true;
 
 	if (inst->lowPowerEnable)
 	{
@@ -251,13 +251,13 @@ Author, Date:
 *********************************************************************************/
 bool instance_enter_sleep(instance_data_t *inst)
 {
-	bool status = TRUE;
+	bool status = true;
 
 	if (inst->lowPowerEnable)
 	{
 		/* Put device into low power mode */
 		dwt_entersleep();
-		inst->isInDeepSleep = TRUE;
+		inst->isInDeepSleep = true;
 		
 		/* Disable pin connection to prevent current leak */
 		port_disable_pin_connection();
@@ -291,7 +291,7 @@ Author, Date:
 *********************************************************************************/
 bool instance_exit_sleep(instance_data_t *inst)
 {
-	bool status = TRUE;
+	bool status = true;
 
 	if (inst->lowPowerEnable)
 	{
@@ -313,7 +313,7 @@ bool instance_exit_sleep(instance_data_t *inst)
 		/* Config device to low power mode */
 		instance_config_sleep(inst);
 
-		inst->isInDeepSleep = FALSE;
+		inst->isInDeepSleep = false;
 		// sys_printf("[%u]DEVICE EXIT DEEP SLEEP\r\n", portGetTickCnt());
 	}
 
@@ -419,7 +419,7 @@ Author, Date:
 *********************************************************************************/
 bool uwb_dev_off_transceiver(void)
 {
-	bool status = TRUE;
+	bool status = true;
 
 	dwt_forcetrxoff();
 

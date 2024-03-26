@@ -26,6 +26,14 @@ extern "C"
 #define CEIL_DIV(a, b) (((a) + (b)-1) / (b))
 #endif
 
+
+#ifndef TRUE
+	#define TRUE 		true
+#endif
+#ifndef FALSE
+	#define FALSE		false
+#endif
+
 #ifdef __cplusplus
 }
 #endif

@@ -30,7 +30,7 @@ CONSENT OF TOAN HUYNH.
 #include "backpack.pb.h"
 #include "command.pb.h"
 #include "backpack_parser.h"
-#include "hc_msg_code.h"
+// #include "hc_msg_code.h"
 #include "proto_utilities.h"
 #include "instance.h"
 #include "instance_config.h"

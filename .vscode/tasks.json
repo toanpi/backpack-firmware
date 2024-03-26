@@ -15,7 +15,9 @@
 		{
 			"type": "shell",
 			"label": "Build UWB Node",
-			"command": "cd ./app/uwb-node; west build  -b decawave_dwm1001_dev .",
+			"command": "cd ./app/backpack-uwb-node; west build  -b decawave_dwm1001_dev .",
+			// "command": "source ~/working/project/backpack/backpack-firmware/third_party/pigweed/activate.sh; cd ./app/backpack-uwb-node; west build  -b decawave_dwm1001_dev .",
+			// "command": "cd ./app/uwb-node; west build  -b decawave_dwm1001_dev .",
 			// "command": "cd ./app/uwb-node; west build  -b decawave_dwm1001_dev .",
 			// "command": " west build  -b decawave_dwm1001_dev app/uwb-node/",
 			// set default build task to this task

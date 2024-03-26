@@ -26,8 +26,8 @@ CONSENT OF TOAN HUYNH.
 #include <stdbool.h>
 #include <string.h>
 #include "dev_storage.h"
-#include "FreeRTOS.h"
-#include "task.h"
+// #include "FreeRTOS.h"
+// #include "task.h"
 #include "int_flash_driver.h"
 #include "sys_config.h"
 #include "memory_map.h"

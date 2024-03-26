@@ -78,9 +78,9 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      MODULE LEVEL VARIABLES
 //###########################################################################################################
-// static SemaphoreHandle_t irqSemaphore;
-// static SemaphoreHandle_t uwbSem;
-// static SemaphoreHandle_t algoSemaphore;
+static SemaphoreHandle_t irqSemaphore;
+static SemaphoreHandle_t uwbSem;
+static SemaphoreHandle_t algoSemaphore;
 static bool isInit = false;
 static bool isInitCb = false;
 
@@ -93,8 +93,8 @@ static bool isInitCb = false;
 static void show_status(void);
 #endif
 
-// static bool uwb_lock(void);
-// static bool uwb_unlock(void);
+static bool uwb_lock(void);
+static bool uwb_unlock(void);
 
 //###########################################################################################################
 //      PUBLIC FUNCTIONS
@@ -181,13 +181,13 @@ Notes:
 Author, Date:
 	Toan Huynh, 07/15/2022
 *********************************************************************************/
-int dw_main_init(void)
+int dw_main(void)
 {
 	instance_data_t *inst = instance_get_local_structure_ptr(0);
 	struct TDMAHandler *tdma_handler = (struct TDMAHandler *)get_tdma_handler();
 
 	/* turn off all the LEDs */
-	// led_off(LED_ALL); 
+	led_off(LED_ALL); 
 
 	peripherals_init();
 
@@ -200,7 +200,7 @@ int dw_main_init(void)
 	/* Disable DW1000 IRQ until we configure the application */
 	port_DisableEXT_IRQ(); 
 
-	// led_off(LED_ALL);
+	led_off(LED_ALL);
 
 	if (inittestapplication() == (uint32)-1)
 	{
@@ -229,48 +229,54 @@ int dw_main_init(void)
 
 	port_EnableEXT_IRQ();
 
+	// Initializing the low level radio handling
+  algoSemaphore = xSemaphoreCreateMutex();
+	uwbSem = xSemaphoreCreateCounting(0xFFFFFFFF, 0);
+
 	isInit = true;
 
-	return 0;
+	uint32 waiting_duration = 0;
+
+#if ENABLE_SHOW_STATUS
+	uint32 time_accum = 0;
+#endif
+
+	/* Main loop */
+	while (1)
+	{
+		/* Run some statictis task */
+		dw_task_setup();
+
+		/* Wait until interrupt or timeout occurs */
+		xSemaphoreTake(uwbSem, waiting_duration);
+
+		waiting_duration = 0;
+
+		if (uwb_lock())
+		{
+			/* Run the state machine */
+			waiting_duration = app_state_machine_run(inst, tdma_handler);
+			uwb_unlock();
+		}
+
+		if (waiting_duration != MAX_TIMEOUT)
+		{
+			waiting_duration = waiting_duration / portTICK_PERIOD_MS;
+		}
+
+#if ENABLE_SHOW_STATUS
+		time_accum += waiting_duration;
+
+		if (time_accum >= UPDATE_STATUS_TIMEOUT)
+		{
+			/* Time to show status */
+			time_accum = 0;
+			show_status();
+		}
+#endif
+
+	}
 }
-
-// int dw_main_loop(void) 
-// {
-// 	// Initializing the low level radio handling
-//   // algoSemaphore = xSemaphoreCreateMutex();
-// 	// uwbSem = xSemaphoreCreateCounting(0xFFFFFFFF, 0);
-
-// 	uint32 waiting_duration = 0;
-
-// #if ENABLE_SHOW_STATUS
-// 	uint32 time_accum = 0;
-// #endif
-
-// 	/* Main loop */
-// 	while (1)
-// 	{
-// 		/* Run some statictis task */
-// 		dw_task_setup();
-
-// 		/* Wait until interrupt or timeout occurs */
-// 		xSemaphoreTake(uwbSem, waiting_duration);
-
-// 		waiting_duration = 0;
-
-// 		if (uwb_lock())
-// 		{
-// 			/* Run the state machine */
-// 			waiting_duration = app_state_machine_run(inst, tdma_handler);
-// 			uwb_unlock();
-// 		}
-
-// 		if (waiting_duration != MAX_TIMEOUT)
-// 		{
-// 			waiting_duration = waiting_duration / portTICK_PERIOD_MS;
-// 		}
-
-// 	}
-// }
 
 /********************************************************************************
 Function:
@@ -286,7 +292,6 @@ Notes:
 Author, Date:
 	Toan Huynh, 02/22/2022
 *********************************************************************************/
-#if 0
 void dw_cb_main(void)
 {
 	irqSemaphore = xSemaphoreCreateBinary();
@@ -451,7 +456,6 @@ static void show_status(void)
 	// sys_printf("%05.1fdB %05.2fm\r\n", inst->avgRSL, range_result);
 #endif
 }
-#endif
 #endif
 
 
