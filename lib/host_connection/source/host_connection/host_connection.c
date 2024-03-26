@@ -30,7 +30,8 @@ CONSENT OF TOAN HUYNH.
 #include "host_connection.h"
 // #include "hc_msg_code.h"
 #include "packet.h"
-// #include "host_connection_port.h"
+#include "host_connection_port.h"
+
 
 
 

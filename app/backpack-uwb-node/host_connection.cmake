@@ -49,6 +49,7 @@ ${HOST_CONN_PATH}/source/host_connection
 ${HOST_CONN_PATH}/source/packet
 ${HOST_CONN_PATH}/source/proto_utilities
 ${HOST_CONN_PATH}/source/utils
+${HOST_CONN_PATH}/projects/backpack/port
 ${HOST_CONN_PATH}/third_parties/protobuf/nanopb/nanopb-0.4.7-macosx-x86
 )
 

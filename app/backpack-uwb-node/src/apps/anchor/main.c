@@ -18,7 +18,7 @@ THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL!  NO PART OF THIS
 SOURCE MAY BE DISCLOSED IN ANY MANNER TO A THIRD PARTY WITHOUT PRIOR WRITTEN
 CONSENT OF TOAN HUYNH.
 ************************************************************************************************************/
-#define PW_LOG_MODULE_NAME "uwb-node"
+#define PW_LOG_MODULE_NAME "anchor-node"
 
 //###########################################################################################################
 //      #INCLUDES
@@ -32,6 +32,7 @@ CONSENT OF TOAN HUYNH.
 #include <uwb_dev_parser.h>
 #include <app_main.h>
 #include <dw_main.h>
+#include <host_connection.h>
 
 
 //###########################################################################################################
@@ -82,6 +83,7 @@ K_MUTEX_DEFINE(uwb_mutex);
 //###########################################################################################################
 //      PRIVATE FUNCTIONS
 //###########################################################################################################
+static bool send_data_func(uint8_t* p_data, uint32_t len);
 
 
 /********************************************************************************
@@ -140,14 +142,16 @@ Notes:
 Author, Date:
   Toan Huynh, 01/06/2022
 *********************************************************************************/
-int main(void)
-{
+int main(void) {
+
   PW_LOG_INFO("Backpack UWB Node starting..");
   printk("Backpack UWB Node starting..\n");
-  /* Initialize the host communication */
-  // host_com_init(1024, configMAX_PRIORITIES - 3, HOST_COM_MODE_ENCODE);
 
   // host_com_register_interval_callback(5000, send_device_state_info);
+
+
+  /* Initialize the host communication */
+  host_connection_init(send_data_func, HOST_CONNECTION_MODE_PROTOBUF);
 
   uwb_dev_parser_init();
 
@@ -158,8 +162,6 @@ int main(void)
 
   return 0;
 }
-
-
 
 //###########################################################################################################
 //      INTERRUPTS
@@ -182,8 +184,7 @@ Description:
 Author, Date:
   Toan Huynh, 03/26/2024
 *********************************************************************************/
-void dw_app_signal(void)
-{
+void dw_app_signal(void) {
   k_sem_give(&uwb_sem);
 }
 
@@ -197,8 +198,22 @@ Description:
 Author, Date:
   Toan Huynh, 03/26/2024
 *********************************************************************************/
-bool host_com_send_signal(uint8_t *p_data, uint32_t len)
-{
+bool host_com_send_signal(uint8_t *p_data, uint32_t len) {
+  // TODO: Implement this function
+  return false;
+}
+
+/********************************************************************************
+Input:
+  ---
+Output:
+  ---
+Description:
+  ---
+Author, Date:
+  Toan Huynh, 03/26/2024
+*********************************************************************************/
+static bool send_data_func(uint8_t *p_data, uint32_t len) {
   // TODO: Implement this function
   return false;
 }
