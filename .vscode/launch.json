@@ -12,12 +12,13 @@
       "executable": "./app/backpack-uwb-node/build/zephyr/zephyr.elf",
       // "executable": "./app/backpack-uwb-node/build/zephyr/zephyr.elf",
       // "executable": "./build/zephyr/zephyr.elf",
-      // "serverpath": "/Applications/SEGGER/JLink/JLinkGDBServerCLExe",
+      "serverpath": "/Applications/SEGGER/JLink/JLinkGDBServerCLExe",
       "servertype": "jlink",
       "interface": "swd",
       "device": "nRF52832_xxAA",
       // "runToEntryPoint": "main",
       // "serialNumber": "000760107446",
+      // "serialNumber": "7601073591",
     }
   ]
 }

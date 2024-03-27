@@ -9,7 +9,10 @@
                 "${workspaceFolder}/third_party/pigweed/environment/packages/zephyr/include/zephyr/drivers",
                 "${workspaceFolder}/third_party/pigweed/environment/packages/zephyr/include/zephyr/drivers/gpio",
                 "${workspaceFolder}/third_party/pigweed/environment/packages/zephyr/include/zephyr/**",
-                "${workspaceFolder}/third_party/pigweed/environment/packages/zephyr/include"
+                "${workspaceFolder}/third_party/pigweed/environment/packages/zephyr/include",
+                "${workspaceFolder}/lib/host_connection/source/host_connection",
+                "${workspaceFolder}/lib/host_connection/source/packet",
+                "${workspaceFolder}/lib/host_connection/projects/backpack/parser/backpack"
             ],
             "defines": [],
             "macFrameworkPath": [

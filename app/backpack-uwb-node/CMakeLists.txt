@@ -10,6 +10,7 @@ project(backpack-uwb-node)
 include_directories(include) # Prerequisites
 include(host_connection.cmake)
 include(uwblib.cmake)
+
 # target_link_libraries(app PRIVATE hello_world)
 
 ########################################################################################
@@ -21,6 +22,7 @@ src/dw1000/dw1000_board.c
 src/zephyr_os/dw_decawave.c 
 src/zephyr_os/dw_os.c 
 src/zephyr_os/dw_storage.c
+src/zephyr_os/dw_serial.c
 )
 
 ########################################################################################

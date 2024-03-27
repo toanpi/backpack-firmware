@@ -28,7 +28,6 @@ CONSENT OF TOAN HUYNH.
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include "host_connection.h"
-// #include "hc_msg_code.h"
 #include "packet.h"
 #include "host_connection_port.h"
 

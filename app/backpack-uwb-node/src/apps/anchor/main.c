@@ -29,10 +29,9 @@ CONSENT OF TOAN HUYNH.
 #include <pw_log/log.h>
 #include "instance.h"
 #include "host_msg.h"
-#include <uwb_dev_parser.h>
 #include <app_main.h>
 #include <dw_main.h>
-#include <host_connection.h>
+#include <dw_serial.h>
 
 
 //###########################################################################################################
@@ -75,15 +74,24 @@ K_MUTEX_DEFINE(uwb_mutex);
 
 
 //###########################################################################################################
-//      PUBLIC FUNCTIONS
+//      APP THREADS DEFINITIONS
 //###########################################################################################################
+#define HOST_CONNECT_STACK_SIZE 4096
 
+
+#define HOST_CONNECT_PRIORITY   5
+
+//###########################################################################################################
+//      APP THREADS
+//###########################################################################################################
+K_THREAD_DEFINE(host_conn_tid, HOST_CONNECT_STACK_SIZE,
+                host_conn_entry, NULL, NULL, NULL,
+                HOST_CONNECT_PRIORITY, 0, 0);
 
 
 //###########################################################################################################
 //      PRIVATE FUNCTIONS
 //###########################################################################################################
-static bool send_data_func(uint8_t* p_data, uint32_t len);
 
 
 /********************************************************************************
@@ -145,20 +153,12 @@ Author, Date:
 int main(void) {
 
   PW_LOG_INFO("Backpack UWB Node starting..");
+
   printk("Backpack UWB Node starting..\n");
 
-  // host_com_register_interval_callback(5000, send_device_state_info);
-
-
-  /* Initialize the host communication */
-  host_connection_init(send_data_func, HOST_CONNECTION_MODE_PROTOBUF);
-
-  uwb_dev_parser_init();
+  host_conn_thread();
 
   main_task(NULL, NULL, NULL);
-
-  /* This task is used for forwarding the received packets to the host */
-  // host_com_task_init(512, configMAX_PRIORITIES - 3);
 
   return 0;
 }
@@ -186,36 +186,6 @@ Author, Date:
 *********************************************************************************/
 void dw_app_signal(void) {
   k_sem_give(&uwb_sem);
-}
-
-/********************************************************************************
-Input:
-  ---
-Output:
-  ---
-Description:
-  ---
-Author, Date:
-  Toan Huynh, 03/26/2024
-*********************************************************************************/
-bool host_com_send_signal(uint8_t *p_data, uint32_t len) {
-  // TODO: Implement this function
-  return false;
-}
-
-/********************************************************************************
-Input:
-  ---
-Output:
-  ---
-Description:
-  ---
-Author, Date:
-  Toan Huynh, 03/26/2024
-*********************************************************************************/
-static bool send_data_func(uint8_t *p_data, uint32_t len) {
-  // TODO: Implement this function
-  return false;
 }
 
 //###########################################################################################################

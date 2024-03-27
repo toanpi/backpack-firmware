@@ -1,5 +1,5 @@
 /************************************************************************************************************
-Module:       host_connection.h
+Module:       dw_serial
 
 Revision:     1.0
 
@@ -10,85 +10,49 @@ Notes:        ---
 History:
 Date          Name      Changes
 -----------   ----      -------------------------------------------------------------------------------------
-04/12/2022    TH        Began Coding    (TH = Toan Huynh)
+03/27/2024    TH       Began Coding    (TH = Toan Huynh)
 
+COPYRIGHT © 2024 TOAN HUYNH. ALL RIGHTS RESERVED.
 
-COPYRIGHT © 2022 TOAN HUYNH.  ALL RIGHTS RESERVED.
-
-THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL!  NO PART OF THIS
+THIS SOURCE IS TOAN HUYNH PROPRIETARY AND CONFIDENTIAL! NO PART OF THIS
 SOURCE MAY BE DISCLOSED IN ANY MANNER TO A THIRD PARTY WITHOUT PRIOR WRITTEN
 CONSENT OF TOAN HUYNH.
-
 ************************************************************************************************************/
-#ifndef _HOST_CONNECTION_H
-#define _HOST_CONNECTION_H
+
+#ifndef _dw_serial_h
+#define _dw_serial_h
 
 //###########################################################################################################
 // #INCLUDES
 //###########################################################################################################
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-
 
 
 
 //###########################################################################################################
 // DEFINED CONSTANTS
 //###########################################################################################################
-#define HOST_ADDR          (0x00)
-
-#define PACKET_END              '\n'
-#define PACKET_DELIMITER        '\r'
 
 
 
 //###########################################################################################################
 // DEFINED TYPES
 //###########################################################################################################
-/* Error code */
-typedef enum
-{
-  HOST_CONNECTION_SUCCESS = 0,
-  HOST_CONNECTION_ERR,
-  HOST_CONNECTION_PARAM_INVALID,
-  HOST_CONNECTION_INIT_ERR,
-} host_connection_err_e;
 
-/* Host connection operation mode */
-typedef enum
-{
-  HOST_CONNECTION_MODE_LOG = 0,
-  HOST_CONNECTION_MODE_PROTOBUF,
-} host_connection_mode_e;
 
-typedef bool (*send_data_f)(uint8_t * p_data, uint32_t len);
-typedef bool (*encode_f)(uint8_t *p_buf, uint16_t buf_size, uint8_t *p_data, uint32_t len, uint32_t *p_written_len);
-typedef bool (*decode_f) (uint8_t *p_data, uint16_t data_len);
 
 //###########################################################################################################
 // DEFINED MACROS
 //###########################################################################################################
-// Check if the buffer is a valid package
-#define HC_END_PACKAGE(c, buf, buf_len) \
-  (c) == PACKET_END && (buf_len) > 1 && buf[(buf_len) - 1] == PACKET_DELIMITER
-
 
 
 
 //###########################################################################################################
 // FUNCTION PROTOTYPES
 //###########################################################################################################
-uint32_t host_connection_init(send_data_f send_data_func, host_connection_mode_e mode);
-uint32_t host_connection_send(void * p_data, uint32_t len, encode_f encode_func);
-uint32_t host_connection_parse(uint8_t * p_data, uint32_t len, decode_f decode_func);
-uint32_t host_connection_encode(uint8_t *p_buf, uint32_t buf_len, void *p_data, uint32_t data_len, encode_f encode_func);
-bool host_connection_write(uint8_t *p_data, uint32_t data_len);
-bool host_connection_forward(uint8_t *p_data, uint32_t data_len, bool update_src_addr, uint32_t src_addr);
-bool host_connection_process(uint8_t *p_data, uint32_t len, decode_f decode_func, send_data_f write);
-
+int host_conn_thread(void);
+void host_conn_entry(void* p1, void* p2, void* p3);
 
 //###########################################################################################################
-// END OF host_connection.h
+// END OF dw_serial.c
 //###########################################################################################################
 #endif
