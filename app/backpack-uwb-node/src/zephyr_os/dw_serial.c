@@ -228,8 +228,10 @@ Author, Date:
         Toan Huynh, 03/27/2024
 *********************************************************************************/
 static int uart_init(void) {
+  // TODO: Use logging
+
   if (!device_is_ready(uart_dev)) {
-    printk("UART device not found!");
+    // printk("UART device not found!");
     return 0;
   }
 
@@ -238,11 +240,11 @@ static int uart_init(void) {
 
   if (ret < 0) {
     if (ret == -ENOTSUP) {
-      printk("Interrupt-driven UART API support not enabled\n");
+      // printk("Interrupt-driven UART API support not enabled\n");
     } else if (ret == -ENOSYS) {
-      printk("UART device does not support interrupt-driven API\n");
+      // printk("UART device does not support interrupt-driven API\n");
     } else {
-      printk("Error setting UART callback: %d\n", ret);
+      // printk("Error setting UART callback: %d\n", ret);
     }
     return 0;
   }

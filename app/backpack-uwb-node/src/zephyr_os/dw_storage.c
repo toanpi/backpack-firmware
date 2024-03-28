@@ -121,7 +121,7 @@ bool cfgReadU8list(ConfigField field, uint8_t *list, uint8_t lenth)
 	int rc = nvs_read(&fs, field, list, lenth);
 	
 	if (rc) {
-		printk("No found id %d\n", field);
+		// printk("No found id %d\n", field);
 		return false;
 	}
 
@@ -132,7 +132,7 @@ bool cfgSet(ConfigField field, uint8_t *p_data, uint8_t size)
 {
 	int rc = nvs_write(&fs, field, p_data, size);
 	if (rc) {
-		printk("Write failed\n");
+		// printk("Write failed\n");
 		return false;
 	}
 	return true;
@@ -146,7 +146,7 @@ bool cfgStore(bool need_clear)
 	if (need_clear) {
 		rc = nvs_clear(&fs);
 		if (rc) {
-			printk("Clear failed\n");
+			// printk("Clear failed\n");
 			return false;
 		}
 	}
@@ -157,7 +157,7 @@ bool cfgReset(void)
 {
 	int rc = nvs_clear(&fs);
 	if (rc) {
-		printk("Clear failed\n");
+		// printk("Clear failed\n");
 		return false;
 	}
 	return true;

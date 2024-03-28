@@ -34,10 +34,14 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 // DEFINED CONSTANTS
 //###########################################################################################################
-// #define portTICK_PERIOD_MS  1
 
+#if CONFIG_UWBLIB_DEBUG
 #define sys_printf  printk
 #define db_printf   printk
+#else
+#define sys_printf(...)
+#define db_printf(...)
+#endif
 
 //###########################################################################################################
 // DEFINED TYPES

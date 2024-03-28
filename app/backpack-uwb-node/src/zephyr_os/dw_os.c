@@ -65,6 +65,8 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      PRIVATE FUNCTION PROTOTYPES
 //###########################################################################################################
+// Host connection lock
+K_MUTEX_DEFINE(host_connection_mutex);
 
 
 
@@ -74,12 +76,14 @@ CONSENT OF TOAN HUYNH.
 
 void host_connection_lock(void)
 {
-
+  // Zephyr OS lock
+  k_mutex_lock(&host_connection_mutex, K_FOREVER);
 }
 
 void host_connection_unlock(void)
 {
-
+  // Zephyr OS unlock
+  k_mutex_unlock(&host_connection_mutex);
 }
 
 

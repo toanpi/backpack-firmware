@@ -24,7 +24,6 @@ CONSENT OF TOAN HUYNH.
 //      #INCLUDES
 //###########################################################################################################
 #include <zephyr/kernel.h>
-#include <zephyr/sys/printk.h>
 #include <zephyr/logging/log.h>
 #include <pw_log/log.h>
 #include "instance.h"
@@ -154,7 +153,6 @@ int main(void) {
 
   PW_LOG_INFO("Backpack UWB Node starting..");
 
-  printk("Backpack UWB Node starting..\n");
 
   host_conn_thread();
 
