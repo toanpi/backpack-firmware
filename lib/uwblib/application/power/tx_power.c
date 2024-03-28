@@ -278,11 +278,12 @@ Author, Date:
 void showTxPower(void)
 {
 	instance_data_t *inst = instance_get_local_structure_ptr(0);
-	uint32 chan = inst->chConfig.channelNumber;
-	uint32 prf = (inst->chConfig.pulseRepFreq == DWT_PRF_16M) ? 16 : 64;
 	tx_power_t power = tx_power_convert_absolute_config(&inst->txPower);
 
-	sys_printf("TX Channel: %ld - PRF: %ldM\n\r", chan, prf);
+	sys_printf("TX Channel: %ld - PRF: %ldM\n\r",
+							inst->chConfig.channelNumber,
+							(inst->chConfig.pulseRepFreq == DWT_PRF_16M) ? 16 : 64);
+
 	sys_printf("Tx Power: \n\r");
 
 	if (power.mode == TX_POWER_MANUAL)

@@ -42,22 +42,9 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      CONSTANT #DEFINES
 //###########################################################################################################
-#define NVS_PARTITION		storage_partition
+#define NVS_PARTITION					storage_partition
 #define NVS_PARTITION_DEVICE	FIXED_PARTITION_DEVICE(NVS_PARTITION)
 #define NVS_PARTITION_OFFSET	FIXED_PARTITION_OFFSET(NVS_PARTITION)
-
-/* 1000 msec = 1 sec */
-#define SLEEP_TIME      100
-/* maximum reboot counts, make high enough to trigger sector change (buffer */
-/* rotation). */
-#define MAX_REBOOT 400
-
-#define ADDRESS_ID 1
-#define KEY_ID 2
-#define RBT_CNT_ID 3
-#define STRING_ID 4
-#define LONG_ID 5
-
 
 
 //###########################################################################################################
@@ -119,50 +106,32 @@ static struct nvs_fs fs;
 bool cfgReadU8list(ConfigField field, uint8_t *list, uint8_t lenth)
 {
 	int rc = nvs_read(&fs, field, list, lenth);
-	
-	if (rc) {
-		// printk("No found id %d\n", field);
-		return false;
-	}
 
-	return true;
+	// rc is number of bytes read
+	return rc > 0;
 }
 
 bool cfgSet(ConfigField field, uint8_t *p_data, uint8_t size)
 {
 	int rc = nvs_write(&fs, field, p_data, size);
-	if (rc) {
-		// printk("Write failed\n");
-		return false;
-	}
-	return true;
 
+	/**
+	* rc is number of bytes written 
+	* if rc == 0, nothing was written since the data is the same
+	*/
+	return rc >= 0;
 }
 
 bool cfgStore(bool need_clear)
 {
-	int rc = 0;
-
-	if (need_clear) {
-		rc = nvs_clear(&fs);
-		if (rc) {
-			// printk("Clear failed\n");
-			return false;
-		}
-	}
+	// TODO: nothing to do here since nvs_write is already writing to flash
 	return true;
 }
 
 bool cfgReset(void)
 {
-	int rc = nvs_clear(&fs);
-	if (rc) {
-		// printk("Clear failed\n");
-		return false;
-	}
-	return true;
+	return nvs_clear(&fs) == 0;
 }
-
 
 void cfgInit(void)
 {
