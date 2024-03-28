@@ -26,7 +26,7 @@ CONSENT OF TOAN HUYNH.
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <port_mcu.h>
-#include "pw_log/log.h"
+// #include "pw_log/log.h"
 
 
 
@@ -211,10 +211,10 @@ static int dw1000_hw_init_interrupt(void)
 		gpio_add_callback(gpio_irq.port, &gpio_cb);
 		gpio_pin_interrupt_configure_dt(&gpio_irq, GPIO_INT_EDGE_RISING);
 
-		PW_LOG_INFO("IRQ on %s pin %d", gpio_irq.port->name, gpio_irq.pin);
+		// PW_LOG_INFO("IRQ on %s pin %d", gpio_irq.port->name, gpio_irq.pin);
 		return 0;
 	} else {
-		PW_LOG_ERROR("IRQ pin not configured");
+		// PW_LOG_ERROR("IRQ pin not configured");
 		__ASSERT(true, "IRQ pin not configured");
 		return -ENOENT;
 	}

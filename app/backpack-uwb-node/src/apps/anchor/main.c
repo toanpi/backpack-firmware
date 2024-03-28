@@ -24,13 +24,12 @@ CONSENT OF TOAN HUYNH.
 //      #INCLUDES
 //###########################################################################################################
 #include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
-#include <pw_log/log.h>
 #include "instance.h"
 #include "host_msg.h"
 #include <app_main.h>
 #include <dw_main.h>
 #include <dw_serial.h>
+// #include <pw_log/log.h>
 
 
 //###########################################################################################################
@@ -151,8 +150,7 @@ Author, Date:
 *********************************************************************************/
 int main(void) {
 
-  PW_LOG_INFO("Backpack UWB Node starting..");
-
+  // PW_LOG_INFO("Backpack UWB Node starting..");
 
   host_conn_thread();
 
