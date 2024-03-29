@@ -22,6 +22,7 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 //      #INCLUDES
 //###########################################################################################################
+#include <zephyr/kernel.h>
 #include <zephyr/sys/reboot.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>

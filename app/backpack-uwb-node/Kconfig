@@ -1,1 +1,10 @@
+config UWBLIB_DEBUG
+    bool "Enable debugging for UWB Library"
+    default n
+    help
+      This option enables debug logging and additional checks
+      within the UWB library to aid in development and troubleshooting.
+      It may impact performance and should typically be disabled
+      in production builds.
+
 source "Kconfig.zephyr"

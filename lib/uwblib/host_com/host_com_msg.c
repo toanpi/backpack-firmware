@@ -157,6 +157,29 @@ bool host_com_send_dev_info(uint8_t *data, uint16_t len)
 }
 
 /********************************************************************************
+Input:
+  ---
+Output:
+  ---
+Description:
+  Create a log funtion like printf
+  Max buffer size is 256 bytes
+Author, Date:
+  Toan Huynh, 03/28/2024
+*********************************************************************************/
+void host_com_log(const char *format, ...)
+{
+  char buffer[256] = {0};
+  va_list args;
+
+  va_start(args, format);
+  vsprintf(buffer, format, args);
+  va_end(args);
+
+  host_connection_send((uint8_t *)buffer, strlen(buffer) + 1, encode_uwb_log_msg);
+}
+
+/********************************************************************************
 Function:
   ()
 Input Parameters:

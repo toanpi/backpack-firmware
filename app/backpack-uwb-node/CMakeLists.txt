@@ -23,6 +23,7 @@ src/zephyr_os/dw_decawave.c
 src/zephyr_os/dw_os.c 
 src/zephyr_os/dw_storage.c
 src/zephyr_os/dw_serial.c
+src/zephyr_os/dw_msg_manager.c
 )
 
 ########################################################################################

@@ -74,7 +74,7 @@ bool host_msg_find_msg(uint32_t node_addr);
 bool host_msg_parse_msgs(instance_data_t *inst, uint32_t src_addr, uint8_t *data, uint32_t len);
 void host_msg_send_host_setup(void);
 void host_msg_send_test_msg_res(uint32_t arg);
-
+int host_msg_send_node_msg(uint32_t node_addr, uint8_t* p_data, uint32_t len);
 
 
 

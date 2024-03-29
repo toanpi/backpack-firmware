@@ -26,9 +26,9 @@ CONSENT OF TOAN HUYNH.
 // #INCLUDES
 //###########################################################################################################
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include <zephyr/kernel.h>
-#include <zephyr/sys/printk.h>
 
 
 //###########################################################################################################
@@ -36,8 +36,20 @@ CONSENT OF TOAN HUYNH.
 //###########################################################################################################
 
 #if CONFIG_UWBLIB_DEBUG
+#if 1 // Send to host console
+
+extern void host_com_log(const char *format, ...);
+
+#define sys_printf  host_com_log
+#define db_printf   host_com_log
+#else // kernel printf
+
+#include <zephyr/sys/printk.h>
+
 #define sys_printf  printk
 #define db_printf   printk
+
+#endif
 #else
 #define sys_printf(...)
 #define db_printf(...)

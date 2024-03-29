@@ -88,15 +88,17 @@ static transfer_control_host_msg host_msg_handler =
   // .ranging = true,
 };
 
-static msg_storage_t msg_storage = {0};
+// static msg_storage_t msg_storage = {0};
 static uint32_t g_src_addr = BROADCAST_ADDRESS;
 
 //###########################################################################################################
 //      PRIVATE FUNCTION PROTOTYPES
 //###########################################################################################################
+#if 0
 static msg_slot_t * alloc_slot(msg_storage_t *p_msg_storage);
 static bool free_slot(msg_slot_t * slot);
 static msg_slot_t *find_slot(uint32_t addr, msg_storage_t *p_msg_storage);
+#endif
 
 
 
@@ -154,6 +156,7 @@ transfer_control_host_msg * host_msg_config_get(void)
   return &host_msg_handler;
 }
 
+#if 0
 /********************************************************************************
 Input:
   ---
@@ -232,6 +235,7 @@ bool host_msg_find_msg(uint32_t node_addr)
   msg_slot_t *slot = find_slot(node_addr, &msg_storage);
   return slot && slot->length > 0;
 }
+#endif
 
 /********************************************************************************
 Input:
@@ -249,6 +253,22 @@ static bool send_data(uint8_t *p_data, uint32_t len)
   uint32_t des_addr = g_src_addr; // destination address
 
   return inst_net_send_msg(inst, p_data, len, des_addr);
+}
+
+/********************************************************************************
+Input:
+  ---
+Output:
+  ---
+Description:
+  ---
+Author, Date:
+  Toan Huynh, 03/29/2024
+*********************************************************************************/
+int host_msg_send_node_msg(uint32_t node_addr, uint8_t* p_data, uint32_t len) {
+  instance_data_t* inst = instance_get_local_structure_ptr(0);
+  inst_net_send_msg(inst, p_data, len, node_addr);
+  return 0;
 }
 
 /********************************************************************************
@@ -552,6 +572,7 @@ void send_dev_calib_info(void)
 //###########################################################################################################
 //      PRIVATE FUNCTIONS
 //###########################################################################################################
+#if 0
 /********************************************************************************
 Input:
   ---
@@ -629,6 +650,8 @@ static msg_slot_t *find_slot(uint32_t addr, msg_storage_t *p_msg_storage)
 
   return NULL;
 }
+#endif
+
 //###########################################################################################################
 //      INTERRUPTS
 //###########################################################################################################
